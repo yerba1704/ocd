@@ -82,7 +82,7 @@ OCD support many different publisher. From single standalone HTML file to a comp
 
 ## Installation
 
-To install __ora* CODEDOC__ execute the script `admin_install.sql`. This will create a new user `OCD`, grant all required privileges to that user and grant the `API` package to public. You should change the pre-defined environment variables _ocd_password_ and _ocd_tabespace_ according to your environment.
+To install __ora* CODEDOC__ execute the script `admin_install.sql`. This will create a new user `OCD`, grant all required privileges to that user and grant the `API` package to public. You should change the pre-defined environment variables _ocd\_password_ and _ocd\_tabespace_ according to your environment.
 
 The `OCD` user receive the following privileges:
 
