@@ -1,0 +1,17 @@
+create table schema_package (
+  schema_name       varchar2(30 char)
+    constraint sp_schema_name_nn_c not null
+    constraint sp_schema_name_uc_c check ( schema_name = upper(schema_name) ),
+  package_id        raw(16) generated always as ( standard_hash(schema_name||package_name, 'MD5') )
+    constraint sp_package_id_p primary key,
+  package_name      varchar2(30 char)
+    constraint sp_package_name_nn_c not null
+    constraint sp_package_name_uc_c check ( package_name = upper(package_name) ),
+  ---------------
+  package_comment   varchar2(4000 char),
+  created_at        timestamp default current_timestamp,
+  deprecated_fl     integer default 0
+    constraint sp_deprecated_fl_nn_c not null
+    constraint sp_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
+  deprecate_warning varchar2(4000 char)
+);

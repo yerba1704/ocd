@@ -1,0 +1,26 @@
+create table package_constant (
+  package_id        raw(16)
+    constraint pc_package_id_nn not null
+    constraint pc_package_id_r references schema_package ( package_id ) on delete cascade,
+  constant_id       raw(16) generated always as ( standard_hash(package_id||constant_name, 'MD5') )
+    constraint pc_constant_id_p primary key,
+  constant_name     varchar2(30 char)
+    constraint pc_constant_name_nn_c not null
+    constraint pc_constant_name_uc_c check ( constant_name = upper(constant_name) ),
+  ----------------
+  constant_comment  varchar2(4000 char),
+  constant_datatype varchar2(255 char)
+    constraint pc_constant_datatype_nn_c not null
+    constraint pc_constant_datatype_uc_c check ( constant_datatype = upper(constant_datatype) ),
+  constant_null_fl  integer default 1
+    constraint pc_constant_null_fl_nn_c not null
+    constraint pc_constant_null_fl_in_c check ( constant_null_fl in (0,1) ),
+  constant_value    varchar2(4000 char)
+    constraint pc_constant_value_nn_c not null,
+  deprecated_fl     integer default 0
+    constraint pc_deprecated_fl_nn_c not null
+    constraint pc_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
+  deprecate_warning varchar2(4000 char),
+  order_sequence    integer
+    constraint pc_order_sequence_nn_c not null
+);

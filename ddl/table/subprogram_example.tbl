@@ -1,0 +1,14 @@
+create table subprogram_example (
+  subprogram_id   raw(16)
+    constraint se_subprogram_id_nn_c not null
+    constraint se_subprogram_id_r references package_subprogram ( subprogram_id ) on delete cascade,
+  example_id      raw(16) generated always as ( standard_hash(subprogram_id||example_name, 'MD5') )
+    constraint se_example_id_p primary key,
+  example_name    varchar2(30 char)
+    constraint se_example_name_nn_c not null
+    constraint se_example_name_uc_c check ( example_name = upper(example_name) ),
+  ------------------
+  example_code    varchar2(4000 char),
+  order_sequence  integer
+    constraint se_order_sequence_nn_c not null
+);

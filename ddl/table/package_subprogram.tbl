@@ -1,0 +1,18 @@
+create table package_subprogram (
+  package_id          raw(16)
+    constraint ps_package_id_nn_c not null
+    constraint ps_package_id_r references schema_package ( package_id ) on delete cascade,
+  subprogram_id       raw(16) generated always as ( standard_hash(package_id||subprogram_name||order_sequence, 'MD5') )
+    constraint ps_subprogram_id_p primary key,
+  subprogram_name     varchar2(30 char)
+    constraint ps_subprogram_name_nn_c not null
+    constraint ps_subprogram_name_uc_c check ( subprogram_name = upper(subprogram_name) ),
+  ------------------
+  subprogram_comment  varchar2(4000 char),
+  deprecated_fl       integer default 0
+    constraint ps_deprecated_fl_nn_c not null
+    constraint ps_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
+  deprecate_warning   varchar2(4000 char),
+  order_sequence      integer
+    constraint ps_order_sequence_nn_c not null
+);

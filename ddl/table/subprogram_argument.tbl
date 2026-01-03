@@ -1,0 +1,15 @@
+create table subprogram_argument (
+  subprogram_id     raw(16)
+    constraint sa_subprogram_id_nn_c not null
+    constraint sa_subprogram_id_r references package_subprogram ( subprogram_id ) on delete cascade,
+  argument_id       raw(16) generated always as ( standard_hash(subprogram_id||argument_name, 'MD5') )
+    constraint sa_argument_id_p primary key,
+  argument_name     varchar2(30 char)
+    constraint sa_argument_name_nn_c not null
+    constraint sa_argument_name_uc_c check ( argument_name = upper(argument_name) ),
+  ------------------
+  argument_comment  varchar2(4000 char),
+  argument_default  varchar2(4000 char),
+  order_sequence    integer
+    constraint sa_order_sequence_nn_c not null
+);

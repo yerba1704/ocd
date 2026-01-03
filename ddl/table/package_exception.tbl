@@ -1,0 +1,18 @@
+create table package_exception (
+  package_id        raw(16)
+    constraint pe_package_id_nn not null
+    constraint pe_package_id_r references schema_package ( package_id ) on delete cascade,
+  exception_id      raw(16) generated always as ( standard_hash(package_id||exception_name, 'MD5') )
+    constraint pe_exception_id_p primary key,
+  exception_name    varchar2(30 char)
+    constraint pe_exception_name_nn_c not null
+    constraint pe_exception_name_uc_c check ( exception_name = upper(exception_name) ),
+  -----------------
+  exception_comment varchar2(4000 char),
+  deprecated_fl     integer default 0
+    constraint pe_deprecated_fl_nn_c not null
+    constraint pe_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
+  deprecate_warning varchar2(4000 char),
+  order_sequence    integer
+    constraint pe_order_sequence_nn_c not null
+);

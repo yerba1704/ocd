@@ -207,6 +207,6 @@ There are some things to know about white-space character handling and the suppo
 
 ### DEPRECATE Pragma
 
-Since Oracle 12 the [DEPRECATE Pragma]([DEPRECATE Pragma](https://docs.oracle.com/en/database/oracle/oracle-database/23/lnpls/DEPRECATE-pragma.html)) is supported in PL/SQL packages.
+Since Oracle 12 the [DEPRECATE Pragma](https://docs.oracle.com/en/database/oracle/oracle-database/23/lnpls/DEPRECATE-pragma.html) is supported in PL/SQL packages.
 
 OCDs extract all DEPRECATE Pragmas, including the warning message (if exist).

@@ -57,7 +57,18 @@ The full PL/SQL Package Reference for the public API package can be found [here]
 
 ## Data Model
 
-comming soon...
+All information from comments in the package specification are stored in these tables:
+
+```
+SCHEMA_PACKAGE
+      ╠PACKAGE_CONSTANT
+      ╠PACKAGE_EXCEPTION
+      ╠PACKAGE_SUBPROGRAM
+      ║       ╠SUBPROGRAM_ARGUMENT
+      ║       ╚SUBPROGRAM_EXAMPLE
+      ╚PACKAGE_TYPE
+              ╚TYPE_FIELD
+```
 
 <!--hier tabelle die zeigt wie aufbau und zusammenhang... generieren mit /home/alegria/Development/_git/yerba1704/spielwiese/ocd/doc/adhoc_data_model_from_dictionary.sql -->
 
@@ -67,7 +78,7 @@ There are several things to know about the syntax of code documentation. Details
 
 ## ora* CODEDOC publisher (OCDp)
 
-OCD support many different publisher. From single standalone HTML file to a complete APEX Application nearly everything is possible. Read [here](doc/ocds.md) about existing publisher.
+OCD support many different publisher. From single standalone HTML file to a complete APEX Application nearly everything is possible. Read [here](doc/ocdp.md) about existing publisher.
 
 ## Installation
 

@@ -1,0 +1,14 @@
+create table type_field (
+  type_id         raw(16)
+    constraint tf_type_id_nn_c not null
+    constraint tf_type_id_r references package_type( type_id ) on delete cascade,
+  field_id        raw(16) generated always as ( standard_hash(type_id||field_name, 'MD5') )
+    constraint tf_argument_id_p primary key,
+  field_name      varchar2(30 char)
+    constraint tf_field_name_nn_c not null
+    constraint tf_field_name_uc_c check ( field_name = upper(field_name) ),
+  ------------------
+  field_comment   varchar2(4000 char),
+  order_sequence  integer
+    constraint tf_order_sequence_nn_c not null
+);
