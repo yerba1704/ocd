@@ -1,0 +1,48 @@
+create table content_revision (
+  schema_name                 varchar2(30 char)
+    constraint cr_schema_name_nn_c not null
+    constraint cr_schema_name_uc_c check ( schema_name = upper(schema_name) ),
+  package_id                  raw(16)
+    constraint cr_package_id_nn_c not null
+    constraint cr_package_id_r references schema_package ( package_id ) on delete cascade,
+  package_name                varchar2(30 char)
+    constraint cr_package_name_nn_c not null
+    constraint cr_package_name_uc_c check ( package_name = upper(package_name) ),
+  ---------------
+  component_name              varchar2(128 char)
+    constraint cr_component_name_nn_c not null,
+  component_sequence          integer
+    constraint cr_component_sequence_nn_c not null,
+  component_type              varchar2(128 char)
+    constraint cr_component_type_nn_c not null,
+  hierarchical_level          integer
+    constraint cr_hierarchical_level_nn_c not null,
+  created_at                  timestamp,
+  ---------------
+  original_comment_or_code    varchar2(4000 char),
+  original_deprecated_fl      integer
+    constraint cr_original_deprecated_fl_nn_c not null
+    constraint cr_original_deprecated_fl_in_c check ( original_deprecated_fl in (0,1,-1) ),
+  original_deprecate_warning  varchar2(4000 char),
+  ---------------
+  modified_comment_or_code    varchar2(4000 char),
+  modified_deprecated_fl      integer
+    constraint cr_modified_deprecated_fl_nn_c not null
+    constraint cr_modified_deprecated_fl_in_c check ( modified_deprecated_fl in (0,1,-1) ),
+  modified_deprecate_warning  varchar2(4000 char),
+  ---------------
+  priority_fl                 integer,
+  ---------------
+  modified_by                 varchar2(255 char),
+  modified_at                 timestamp
+);
+alter table content_revision
+  add constraint cr_pk primary key ( package_id,
+                                    component_name,
+                                    component_sequence );
+--drop table content_revision;
+--comment on table content_revision is 'Every change made by GUI.';
+-----
+--.component_sequence is 'Reflects the position .'; -- unique_sequence
+--
+--.priority_fl is '0 is original, 1 is modified the position .'; -- unique_sequence

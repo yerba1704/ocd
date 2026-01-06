@@ -66,6 +66,7 @@ prompt >>> create main objects 1/2
 @ddl/table/subprogram_example.tbl
 @ddl/table/package_type.tbl
 @ddl/table/type_field.tbl
+@ddl/table/content_revision.tbl
 @ddl/view/package_component.vw
 
 --TODO alter session set plsql_warnings = 'ENABLE:ALL, DISABLE:(5005,5018)';

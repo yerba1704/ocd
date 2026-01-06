@@ -1,6 +1,40 @@
 create or replace package body worker as
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  procedure sync_to_content_revision(i_schema_name in varchar2, i_package_name in varchar2) is
+  begin
+    insert into content_revision
+      select
+        schema_name,
+        package_id,
+        package_name,
+        ltrim(
+          component_name, '.'
+        )                 as component_name,
+        rownum            as component_sequence,
+        ltrim(
+          component_type, '.'
+        )                 as component_type,
+        hierarchical_level,
+        systimestamp      as created_at,
+        comment_or_code   as original_comment_or_code,
+        deprecated_fl     as original_deprecated_fl,
+        deprecate_warning as original_deprecate_warning,
+        comment_or_code   as modified_comment_or_code,
+        deprecated_fl     as modified_deprecated_fl,
+        deprecate_warning as modified_deprecate_warning,
+        0                 as priority_fl,
+        null              as modified_by,
+        null              as modified_at
+      from
+        ocd.package_component
+      where
+        schema_name = i_schema_name
+        and package_name = i_package_name;
+    --TODO heavy logic with created at to preserve existing ui comments :)
+    l('WORKER.SYNC_TO_CONTENT_REVISION> data synchronized successfully ('||i_schema_name||'.'||i_package_name||')');
+  end sync_to_content_revision;  
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
   procedure to_package_subprogram(i_subprogram_name in varchar2, i_comment in clob, i_block_iteration in pls_integer,
                                   i_package_id in raw, i_order_sequence in integer, i_block_t in token_table)
   is
@@ -155,22 +189,20 @@ create or replace package body worker as
   procedure package_compiled(i_schema_name in varchar2, i_object_name in varchar2, i_object_code in clob) is
   begin
     split_package(i_schema_name  => i_schema_name, i_package_name => i_object_name, i_package_code => i_object_code);
+    sync_to_content_revision(i_schema_name  => i_schema_name, i_package_name => i_object_name);
     l('WORKER.PACKAGE_COMPILED> data inserted successfully ('||i_schema_name||'.'||i_object_name||')');
---TODO apex/ui comments (merge)
   end package_compiled;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   procedure package_removed(i_schema_name in varchar2, i_object_name in varchar2) is
   begin
     delete from schema_package where schema_name=i_schema_name and package_name=i_object_name;
     l('WORKER.PACKAGE_REMOVED> data erased successfully ('||i_schema_name||'.'||i_object_name||')');
---TODO apex/ui comments (delete)
   end package_removed;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   procedure user_dropped(i_schema_name in varchar2) is
   begin
     delete from schema_package where schema_name=i_schema_name;
     l('WORKER.USER_DROPPED> data erased successfully ('||i_schema_name||')');
---TODO apex/ui comments (delete)
   end user_dropped;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   function object_code(i_schema_name in varchar2, i_package_name in varchar2) return clob is
