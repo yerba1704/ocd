@@ -3,34 +3,27 @@ create or replace package body worker as
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   procedure sync_to_content_revision(i_schema_name in varchar2, i_package_name in varchar2) is
   begin
-    insert into content_revision
-      select
-        schema_name,
-        package_id,
-        package_name,
-        ltrim(
-          component_name, '.'
-        )                 as component_name,
-        rownum            as component_sequence,
-        ltrim(
-          component_type, '.'
-        )                 as component_type,
-        hierarchical_level,
-        systimestamp      as created_at,
-        comment_or_code   as original_comment_or_code,
-        deprecated_fl     as original_deprecated_fl,
-        deprecate_warning as original_deprecate_warning,
-        comment_or_code   as modified_comment_or_code,
-        deprecated_fl     as modified_deprecated_fl,
-        deprecate_warning as modified_deprecate_warning,
-        0                 as priority_fl,
-        null              as modified_by,
-        null              as modified_at
-      from
-        ocd.package_component
-      where
-        schema_name = i_schema_name
-        and package_name = i_package_name;
+    insert into ocd.content_revision
+      select schema_name,
+             package_id,
+             package_name,
+             ltrim(component_name, '.') as component_name,
+             rownum                     as component_sequence,
+             ltrim(component_type, '.') as component_type,
+             hierarchical_level,
+             systimestamp      as created_at,
+             comment_or_code   as original_comment_or_code,
+             deprecated_fl     as original_deprecated_fl,
+             deprecation_text  as original_deprecation_text,
+             comment_or_code   as modified_comment_or_code,
+             deprecated_fl     as modified_deprecated_fl,
+             deprecation_text  as modified_deprecation_text,
+             0                 as priority_fl,
+             null              as modified_by,
+             null              as modified_at
+        from ocd.package_component
+       where schema_name = i_schema_name
+         and package_name = i_package_name;
     --TODO heavy logic with created at to preserve existing ui comments :)
     l('WORKER.SYNC_TO_CONTENT_REVISION> data synchronized successfully ('||i_schema_name||'.'||i_package_name||')');
   end sync_to_content_revision;  
@@ -38,22 +31,22 @@ create or replace package body worker as
   procedure to_package_subprogram(i_subprogram_name in varchar2, i_comment in clob, i_block_iteration in pls_integer,
                                   i_package_id in raw, i_order_sequence in integer, i_block_t in token_table)
   is
-    l_subprogram_id package_subprogram.subprogram_id%type;
+    l_subprogram_id ocd.package_subprogram.subprogram_id%type;
     l_comment clob:=i_comment;
     l_argument_c sys.ora_mining_varchar2_nt;
     l_example_c sys.ora_mining_varchar2_nt;
     n pls_integer:=1;
     x pls_integer:=0;
-    l_arg_name subprogram_argument.argument_name%type;
-    l_arg_comment subprogram_argument.argument_comment%type;
-    l_arg_default subprogram_argument.argument_default%type;
+    l_arg_name ocd.subprogram_argument.argument_name%type;
+    l_arg_comment ocd.subprogram_argument.argument_comment%type;
+    l_arg_default ocd.subprogram_argument.argument_default%type;
     l_set_next_word_to_name_variable boolean:=false;
     l_switch_arg_default boolean:=false;
     l_default_with_brackets boolean:=false;
   begin
     -- extract or split subprogram comment from argument comments and example code
     inspect_subprogram_type_comment(io_comment => l_comment, o_argument_or_field_c => l_argument_c, o_example_c => l_example_c);
-    insert into package_subprogram values (i_package_id, default, i_subprogram_name, refine_comment(l_comment),
+    insert into ocd.package_subprogram values (i_package_id, default, i_subprogram_name, refine_comment(l_comment),
       --deprecated_fl
       default,
       --deprecated_warning
@@ -83,7 +76,7 @@ create or replace package body worker as
               if not l_default_with_brackets then
                 -- save collected data
                 l_arg_comment:=case when l_argument_c.exists(n) then l_argument_c(n) end;
-                insert into subprogram_argument values (l_subprogram_id, default, 
+                insert into ocd.subprogram_argument values (l_subprogram_id, default, 
                   l_arg_name, refine_comment(l_arg_comment), l_arg_default,
                   n);
                 l_set_next_word_to_name_variable:=true;
@@ -101,7 +94,7 @@ create or replace package body worker as
               else
                 -- save collected data
                 l_arg_comment:=case when l_argument_c.exists(n) then l_argument_c(n) end;
-                insert into subprogram_argument values (l_subprogram_id, default, 
+                insert into ocd.subprogram_argument values (l_subprogram_id, default, 
                   l_arg_name, refine_comment(l_arg_comment), l_arg_default,
                   n);
                 l_switch_arg_default:=false;
@@ -135,7 +128,7 @@ create or replace package body worker as
     
     <<subprogram_examples>>
     for i in 1..l_example_c.count loop
-      insert into subprogram_example values (l_subprogram_id, default, 'EXAMPLE_'||i, l_example_c(i), i);
+      insert into ocd.subprogram_example values (l_subprogram_id, default, 'EXAMPLE_'||i, l_example_c(i), i);
     end loop subprogram_examples;
     
     exception when others then raise;
@@ -144,7 +137,7 @@ create or replace package body worker as
   procedure to_package_type(i_type_name in varchar2, i_comment in clob, i_block_iteration in pls_integer,
                             i_package_id in raw, i_order_sequence in integer, i_block_t in token_table)
   is
-    l_type_id package_type.type_id%type;
+    l_type_id ocd.package_type.type_id%type;
     l_comment clob:=i_comment;
     l_field_c sys.ora_mining_varchar2_nt;
     l_example_c sys.ora_mining_varchar2_nt;
@@ -153,7 +146,7 @@ create or replace package body worker as
   begin
     -- extract or split type comment from field comments
     inspect_subprogram_type_comment(io_comment => l_comment, o_argument_or_field_c => l_field_c, o_example_c => l_example_c);
-    insert into package_type values (i_package_id, default, i_type_name, refine_comment(l_comment),
+    insert into ocd.package_type values (i_package_id, default, i_type_name, refine_comment(l_comment),
       --deprecated_fl
       default,
       -- deprecated_warning
@@ -171,7 +164,7 @@ create or replace package body worker as
         if (i_block_t(j).type='word' and l_new_field) then
           -- get field comment from collection if exists
           l_comment:=case when l_field_c.exists(n+1) then l_field_c(n+1) end;
-          insert into type_field values (l_type_id, default, upper(i_block_t(j).value), refine_comment(l_comment), n);
+          insert into ocd.type_field values (l_type_id, default, upper(i_block_t(j).value), refine_comment(l_comment), n);
           n:=n+1;
           l_new_field := false;
         end if;
@@ -189,7 +182,6 @@ create or replace package body worker as
   procedure package_compiled(i_schema_name in varchar2, i_object_name in varchar2, i_object_code in clob) is
   begin
     split_package(i_schema_name  => i_schema_name, i_package_name => i_object_name, i_package_code => i_object_code);
-    sync_to_content_revision(i_schema_name  => i_schema_name, i_package_name => i_object_name);
     l('WORKER.PACKAGE_COMPILED> data inserted successfully ('||i_schema_name||'.'||i_object_name||')');
   end package_compiled;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -249,7 +241,7 @@ create or replace package body worker as
     l_last_type dbms_id_30;
     l_last_name dbms_id_30;
   begin
-    l('WORKER.SPLIT_PACKAGE> start analyzing source code');
+    l('WORKER.SPLIT_PACKAGE> start analyzing source code ('||i_schema_name||'.'||i_package_name||')');
     l_token_t:=plsql_lexer.lex(p_source => i_package_code);
     l('WORKER.SPLIT_PACKAGE> token varray received');
     
@@ -264,8 +256,8 @@ create or replace package body worker as
           l_comment:=replace(l_comment, chr(9), '  ');
         end if;
         if l_token_t(i).type='word' and lower(l_token_t(i).value) in ('is','as') then
-          delete from schema_package where schema_name=i_schema_name and package_name=i_package_name;
-          insert into schema_package (schema_name, package_name, package_comment) 
+          delete from ocd.schema_package where schema_name=i_schema_name and package_name=i_package_name;
+          insert into ocd.schema_package (schema_name, package_name, package_comment) 
             values (i_schema_name, i_package_name, refine_comment(l_comment) )
             returning package_id into l_package_id;
           l_last_type:='PACKAGE';
@@ -284,9 +276,11 @@ create or replace package body worker as
           split_declaration(i_package_id => l_package_id, i_order_sequence => l_order_sequence, i_block_t => l_block_t,
                             io_last_type => l_last_type, io_last_name => l_last_name);
           l_block_t:=token_table();
-        end if;     
+        end if;
       end if;
     end loop;
+    -- final step for further processsing in apex gui
+    sync_to_content_revision(i_schema_name  => i_schema_name, i_package_name => i_package_name);
   end split_package;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------- 
   procedure split_declaration (
@@ -319,9 +313,9 @@ create or replace package body worker as
                                   io_last_type:=upper(i_block_t(j).value);
                                   <<constant_handling>>
                                   declare
-                                    l_constant_datatype package_constant.constant_datatype%type;
-                                    l_constant_null_fl  package_constant.constant_null_fl%type:=1;
-                                    l_constant_value    package_constant.constant_value%type;
+                                    l_constant_datatype ocd.package_constant.constant_datatype%type;
+                                    l_constant_null_fl  ocd.package_constant.constant_null_fl%type:=1;
+                                    l_constant_value    ocd.package_constant.constant_value%type;
                                     x pls_integer:=1;
                                     is_default boolean := false;
                                   begin
@@ -347,19 +341,19 @@ create or replace package body worker as
                                     l_constant_datatype:=regexp_replace(l_constant_datatype,'((byte|char)\))$', ' \1');
                                     l_constant_datatype:=upper(l_constant_datatype);
                                     
-                                    insert into package_constant values (i_package_id, default, io_last_name, refine_comment(l_comment),
-                                                                         -- constant_datatype
-                                                                         l_constant_datatype,
-                                                                         -- constant_null_fl
-                                                                         l_constant_null_fl,
-                                                                         -- constant_value
-                                                                         l_constant_value,
-                                                                         --deprecated_fl
-                                                                         default,
-                                                                         -- deprecated_warning
-                                                                         default,
-                                                                         --order_sequence
-                                                                         i_order_sequence );
+                                    insert into ocd.package_constant values (i_package_id, default, io_last_name, refine_comment(l_comment),
+                                                                             -- constant_datatype
+                                                                             l_constant_datatype,
+                                                                             -- constant_null_fl
+                                                                             l_constant_null_fl,
+                                                                             -- constant_value
+                                                                             l_constant_value,
+                                                                             --deprecated_fl
+                                                                             default,
+                                                                             -- deprecated_warning
+                                                                             default,
+                                                                             --order_sequence
+                                                                             i_order_sequence );
                                     continue;
                                   end constant_handling;
                                   /*
@@ -371,13 +365,13 @@ create or replace package body worker as
           when 'EXCEPTION'  then  io_last_name:=upper(i_block_t(j-1).value);
                                   io_last_type:=upper(i_block_t(j).value);
                                   
-                                  insert into package_exception values (i_package_id, default, io_last_name, refine_comment(l_comment),
-                                                                        --deprecated_fl
-                                                                        default,
-                                                                        -- deprecated_warning
-                                                                        default,
-                                                                        --order_sequence
-                                                                        i_order_sequence );
+                                  insert into ocd.package_exception values (i_package_id, default, io_last_name, refine_comment(l_comment),
+                                                                            --deprecated_fl
+                                                                            default,
+                                                                            -- deprecated_warning
+                                                                            default,
+                                                                            --order_sequence
+                                                                            i_order_sequence );
                                   continue;
                                   /*
                                   [j-1]     [j]
@@ -436,20 +430,20 @@ create or replace package body worker as
                                     if upper(i_block_t(j+3).value)=io_last_name then
                                       case io_last_type
                                         when 'CONSTANT' then 
-                                          update package_constant
-                                             set deprecated_fl=1, deprecate_warning=l_dep_msg where package_id=i_package_id and constant_name=io_last_name;
+                                          update ocd.package_constant
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and constant_name=io_last_name;
                                         when 'EXCEPTION' then 
-                                          update package_exception
-                                             set deprecated_fl=1, deprecate_warning=l_dep_msg where package_id=i_package_id and exception_name=io_last_name;
+                                          update ocd.package_exception
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and exception_name=io_last_name;
                                         when 'SUBPROGRAM' then 
-                                          update package_subprogram
-                                             set deprecated_fl=1, deprecate_warning=l_dep_msg where package_id=i_package_id and subprogram_name=io_last_name;
+                                          update ocd.package_subprogram
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and subprogram_name=io_last_name;
                                         when 'TYPE' then 
-                                          update package_type
-                                             set deprecated_fl=1, deprecate_warning=l_dep_msg where package_id=i_package_id and type_name=io_last_name;
+                                          update ocd.package_type
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and type_name=io_last_name;
                                         when 'PACKAGE' then 
-                                          update schema_package
-                                             set deprecated_fl=1, deprecate_warning=l_dep_msg where package_id=i_package_id;
+                                          update ocd.schema_package
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id;
                                         else 
                                           null;
                                       end case;

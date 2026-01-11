@@ -12,7 +12,7 @@ create table package_subprogram (
   deprecated_fl       integer default 0
     constraint ps_deprecated_fl_nn_c not null
     constraint ps_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
-  deprecate_warning   varchar2(4000 char),
+  deprecation_text    varchar2(4000 char),
   order_sequence      integer
     constraint ps_order_sequence_nn_c not null
 );

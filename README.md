@@ -61,13 +61,13 @@ All information from comments in the package specification are stored in these t
 
 ```
 SCHEMA_PACKAGE
-      ╠PACKAGE_CONSTANT
-      ╠PACKAGE_EXCEPTION
-      ╠PACKAGE_SUBPROGRAM
-      ║       ╠SUBPROGRAM_ARGUMENT
-      ║       ╚SUBPROGRAM_EXAMPLE
-      ╚PACKAGE_TYPE
-              ╚TYPE_FIELD
+      ├PACKAGE_CONSTANT
+      ├PACKAGE_EXCEPTION
+      ├PACKAGE_SUBPROGRAM
+      │       ├SUBPROGRAM_ARGUMENT
+      │       └SUBPROGRAM_EXAMPLE
+      └PACKAGE_TYPE
+              └TYPE_FIELD
 ```
 
 <!--hier tabelle die zeigt wie aufbau und zusammenhang... generieren mit /home/alegria/Development/_git/yerba1704/spielwiese/ocd/doc/adhoc_data_model_from_dictionary.sql -->

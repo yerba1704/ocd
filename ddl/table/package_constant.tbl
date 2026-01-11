@@ -20,7 +20,7 @@ create table package_constant (
   deprecated_fl     integer default 0
     constraint pc_deprecated_fl_nn_c not null
     constraint pc_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
-  deprecate_warning varchar2(4000 char),
+  deprecation_text  varchar2(4000 char),
   order_sequence    integer
     constraint pc_order_sequence_nn_c not null
 );

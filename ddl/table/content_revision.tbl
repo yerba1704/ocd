@@ -23,13 +23,13 @@ create table content_revision (
   original_deprecated_fl      integer
     constraint cr_original_deprecated_fl_nn_c not null
     constraint cr_original_deprecated_fl_in_c check ( original_deprecated_fl in (0,1,-1) ),
-  original_deprecate_warning  varchar2(4000 char),
+  original_deprecation_text   varchar2(4000 char),
   ---------------
   modified_comment_or_code    varchar2(4000 char),
   modified_deprecated_fl      integer
     constraint cr_modified_deprecated_fl_nn_c not null
     constraint cr_modified_deprecated_fl_in_c check ( modified_deprecated_fl in (0,1,-1) ),
-  modified_deprecate_warning  varchar2(4000 char),
+  modified_deprecation_text   varchar2(4000 char),
   ---------------
   priority_fl                 integer,
   ---------------

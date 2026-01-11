@@ -13,5 +13,5 @@ create table schema_package (
   deprecated_fl     integer default 0
     constraint sp_deprecated_fl_nn_c not null
     constraint sp_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
-  deprecate_warning varchar2(4000 char)
+  deprecation_text  varchar2(4000 char)
 );
