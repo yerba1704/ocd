@@ -4,9 +4,9 @@
 
 ## Introduction
 
-The always free __ora* CODEDOC__ is a framework to create technical documentation for PL/SQL packages.
+The always free __ora* CODEDOC__ is a framework for creating technical documentation for PL/SQL packages.
 
-The description text of each part of a package can be modified by comments in the package specification (syntax details can be found [here](doc/ocds.md)) or directliy inside the APEX application [ocd-apex](https://github.com/yerba1704/ocd-apex).
+The description text of each part of a package can be modified by comments in the package specification (syntax details can be found [here](doc/ocds.md)) or directly inside the APEX application [ocd-apex](https://github.com/yerba1704/ocd-apex).
 
 ## Example usage
 
@@ -78,13 +78,13 @@ There are several things to know about the syntax of code documentation. Details
 
 ## ora* CODEDOC publisher (OCDp)
 
-OCD support many different publisher. From single standalone HTML file to a complete APEX Application nearly everything is possible. Read [here](doc/ocdp.md) about existing publisher.
+OCD supports many different publishers. From single standalone HTML files to a complete APEX application, nearly everything is possible. Read [here](doc/ocdp.md) about existing publishers.
 
 ## Installation
 
 To install __ora* CODEDOC__ execute the script `admin_install.sql`. This will create a new user `OCD`, grant all required privileges to that user and grant the `API` package to public. You should change the pre-defined environment variables *ocd_password* and *ocd_tablespace* according to your environment.
 
-The `OCD` user receive the following privileges:
+The `OCD` user receives the following privileges:
 
 - create session
 - create table
