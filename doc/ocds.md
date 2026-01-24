@@ -10,20 +10,20 @@ Basically all description text is extracted from `single line comments`. These c
 
 ```plsql
 -- This is an example of a constant description.
-c_example constant integer := 1704;
+c_magic_number constant integer := 1704;
 ```
 
 ```plsql
 -- This is
 
 -- working too.
-c_example constant
+c_magic_number constant
 integer := 
 1704;
 ```
 
 ```plsql
-c_example constant integer := 1704; -- But this is ignored.
+c_magic_number constant integer := 1704; -- But this is ignored.
 ```
 
 ## Package components
@@ -41,7 +41,7 @@ None, some or all components of a package can be described in source code.
 Right after the `CREATE OR REPLACE` statement and before the `AS` or `IS` keyword.
 
 ```plsql
-create or replace package ocd_demo authid current_user
+create or replace package pkg_sample authid current_user
 -- This is an example of a package description.
 is
 ```
@@ -52,7 +52,7 @@ Right before the declaration.
 
 ```plsql
 -- This is an example of a procedure description.
-procedure p_example;
+procedure p_noop;
 ```
 
 #### Parameter description
@@ -102,7 +102,7 @@ Right before the declaration.
 
 ```plsql
 -- This is an example of a constant description.
-c_example constant integer := 1704;
+c_magic_number constant integer := 1704;
 ```
 
 ### Exception description
@@ -111,7 +111,7 @@ Right before the declaration.
 
 ```plsql
 -- This is an example of an exception description.
-e_example exception;
+e_parsing_failed exception;
 ```
 
 ### Type description
