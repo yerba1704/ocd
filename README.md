@@ -5,6 +5,7 @@
 ## Introduction
 
 The always free __ora* CODEDOC__ is a framework for creating technical documentation for PL/SQL packages.
+It can produce output in a format similar to Oracle’s [APEX API](https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/index.html) and [Database PL/SQL Packages](https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/) references.
 
 The description text of each part of a package can be modified by comments in the package specification (syntax details can be found [here](doc/ocds.md)) or directly inside the APEX application [ocd-apex](https://github.com/yerba1704/ocd-apex).
 
