@@ -119,12 +119,12 @@ e_parsing_failed exception;
 Right before the declaration.
 
 ```plsql
--- This is an example of an associative array.
+-- This is an example of an associative array description.
 -- It was formerly called PL/SQL table or index-by table.
 type t_number_aa is table of number index by varchar2(64 char); 
--- This is an example of a varray (variable-size array).
+-- This is an example of a varray (variable-size array) description.
 type t_number_va is varray(5) of number;
--- This is an example of a nested table.
+-- This is an example of a nested table description.
 type t_number_nt is table of number;
 ```
 

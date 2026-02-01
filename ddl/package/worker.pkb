@@ -3,141 +3,32 @@ create or replace package body worker as
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   procedure sync_to_content_revision(i_schema_name in varchar2, i_package_name in varchar2) is
   begin
-  /*
-  split_package macht am anfang ein "delete from ocd.schema_package";
-  da content_revision dort mit cascade package_id dranhängt wird entsprechend gelöscht...
-  idee das trigger before delete save modified irgendwohin?
-  
-  
-  --> https://asktom.oracle.com/ords/asktom.search?tag=compound-triggers
-  create or replace trigger emp_ct
-for insert on employees compound trigger 
+    -- split_package first delete from SCHEMA_PACKAGE (cascade), then parse package content and rebuild structure
+    -- because of that, sync is always a simple insert
+    insert into content_revision select schema_name,
+                                        package_id,
+                                        package_name,
+                                        component_id,
+                                        ltrim(component_name, '.') as component_name,
+                                        ltrim(component_type, '.') as component_type,
+                                        rownum           as component_sequence,
+                                        hierarchical_level,
+                                        systimestamp     as created_at,
+                                        comment_or_code  as original_comment_or_code,
+                                        deprecated_fl    as original_deprecated_fl,
+                                        deprecation_text as original_deprecation_text,
+                                        comment_or_code  as modified_comment_or_code,
+                                        deprecated_fl    as modified_deprecated_fl,
+                                        deprecation_text as modified_deprecation_text,
+                                        0                as priority_fl,
+                                        null             as modified_by,
+                                        null             as modified_at
+                                   from ocd.package_component
+                                  where schema_name = i_schema_name
+                                    and package_name = i_package_name;
 
---  type emp_t is table of employees.employee_id%type 
---    index by binary_integer;
---  emps emp_t;
-  
-  before statement is 
-  begin
-    null;
-  end before statement;
-  
-  before each row is 
-  begin
-    null;
-  end before each row;
-  
-  after each row is 
-  begin
-    null;
-    --emps(emps.count + 1) := :new.employee_id;
-  end after each row;
-  
-  after statement is 
-  begin
-  null;
---    forall e in 1 .. emps.count
---      insert into emp_log (log_timestamp, change_type, employee_id) 
---      values (systimestamp, 'I', emps(e));
-  end after statement;
-  
-end;
-/
-  
-  */
-  
-  
---    insert into ocd.content_revision
---      select schema_name,
---             package_id,
---             package_name,
---             ltrim(component_name, '.') as component_name,
---             rownum                     as component_sequence,
---             ltrim(component_type, '.') as component_type,
---             hierarchical_level,
---             systimestamp      as created_at,
---             comment_or_code   as original_comment_or_code,
---             deprecated_fl     as original_deprecated_fl,
---             deprecation_text  as original_deprecation_text,
---             comment_or_code   as modified_comment_or_code,
---             deprecated_fl     as modified_deprecated_fl,
---             deprecation_text  as modified_deprecation_text,
---             0                 as priority_fl,
---             null              as modified_by,
---             null              as modified_at
---        from ocd.package_component
---       where schema_name = i_schema_name
---         and package_name = i_package_name;
-
-MERGE INTO ocd.content_revision t
-    USING (
-    select schema_name,
-             package_id,
-             package_name,
-             ltrim(component_name, '.') as component_name,
-             rownum                     as component_sequence,
-             ltrim(component_type, '.') as component_type,
-             hierarchical_level,
-             systimestamp      as created_at,
-             comment_or_code   as original_comment_or_code,
-             deprecated_fl     as original_deprecated_fl,
-             deprecation_text  as original_deprecation_text,
-             comment_or_code   as modified_comment_or_code,
-             deprecated_fl     as modified_deprecated_fl,
-             deprecation_text  as modified_deprecation_text,
-             0                 as priority_fl,
-             null              as modified_by,
-             null              as modified_at
-        from ocd.package_component
-       where schema_name = i_schema_name
-         and package_name = i_package_name
-    ) s
-    ON (t.package_id=s.package_id)
-  WHEN MATCHED THEN
-    UPDATE SET t.created_at=s.CREATED_AT
---    DELETE WHERE d.status = 10;
-  WHEN NOT MATCHED THEN
-    INSERT (SCHEMA_NAME,
-PACKAGE_ID,
-PACKAGE_NAME,
-COMPONENT_NAME,
-COMPONENT_SEQUENCE,
-COMPONENT_TYPE,
-HIERARCHICAL_LEVEL,
-CREATED_AT,
-ORIGINAL_COMMENT_OR_CODE,
-ORIGINAL_DEPRECATED_FL,
-ORIGINAL_DEPRECATION_TEXT,
-MODIFIED_COMMENT_OR_CODE,
-MODIFIED_DEPRECATED_FL,
-MODIFIED_DEPRECATION_TEXT,
-PRIORITY_FL
---,
---MODIFIED_BY
---MODIFIED_AT
-)
-    VALUES (s.schema_name,
-             s.package_id,
-             s.package_name,
-             s.component_name,
-             s.component_sequence,
-             s.component_type,
-             s.hierarchical_level,
-             s.created_at,
-             s.original_comment_or_code,
-             s.original_deprecated_fl,
-             s.original_deprecation_text,
-             s.modified_comment_or_code,
-             s.modified_deprecated_fl,
-             s.modified_deprecation_text,
-             s.priority_fl
---             ,
---             modified_by,
---            modified_at
-            );
---    del
-
-    --TODO heavy logic with created at to preserve existing ui comments :)
+-- UPDATE from gtt?
+--TODO sophisticated logic to preserve existing ui comments !!!
     l('WORKER.SYNC_TO_CONTENT_REVISION> data synchronized successfully ('||i_schema_name||'.'||i_package_name||')');
   end sync_to_content_revision;  
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------

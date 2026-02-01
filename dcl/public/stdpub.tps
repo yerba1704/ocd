@@ -1,0 +1,1 @@
+grant execute on stdpub to public

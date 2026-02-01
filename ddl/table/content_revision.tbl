@@ -9,12 +9,14 @@ create table content_revision (
     constraint cr_package_name_nn_c not null
     constraint cr_package_name_uc_c check ( package_name = upper(package_name) ),
   ---------------
+  component_id                raw(16)
+    constraint cr_component_id_nn_c not null,
   component_name              varchar2(128 char)
     constraint cr_component_name_nn_c not null,
-  component_sequence          integer
-    constraint cr_component_sequence_nn_c not null,
   component_type              varchar2(128 char)
     constraint cr_component_type_nn_c not null,
+  component_sequence          integer
+    constraint cr_component_sequence_nn_c not null,
   hierarchical_level          integer
     constraint cr_hierarchical_level_nn_c not null,
   created_at                  timestamp,
@@ -36,13 +38,4 @@ create table content_revision (
   modified_by                 varchar2(255 char),
   modified_at                 timestamp
 );
-alter table content_revision
-  add constraint cr_pk primary key ( package_id,
-                                    component_name,
-                                    component_sequence );
---drop table content_revision;
---comment on table content_revision is 'Every change made by GUI.';
------
---.component_sequence is 'Reflects the position .'; -- unique_sequence
---
---.priority_fl is '0 is original, 1 is modified the position .'; -- unique_sequence
+alter table content_revision  add constraint cr_pk primary key ( package_id, component_id);
