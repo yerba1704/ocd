@@ -1,0 +1,10 @@
+create global temporary table content_revision_gtt (
+  package_id                raw(16),
+  component_id              raw(16),
+  modified_comment_or_code  varchar2(4000 char),
+  modified_deprecated_fl    integer,
+  modified_deprecation_text varchar2(4000 char),
+  priority_fl               integer,
+  modified_by               varchar2(255 char),
+  modified_at               timestamp(6)
+) on commit delete rows;

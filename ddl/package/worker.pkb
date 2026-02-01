@@ -5,30 +5,29 @@ create or replace package body worker as
   begin
     -- split_package first delete from SCHEMA_PACKAGE (cascade), then parse package content and rebuild structure
     -- because of that, sync is always a simple insert
-    insert into content_revision select schema_name,
-                                        package_id,
-                                        package_name,
-                                        component_id,
-                                        ltrim(component_name, '.') as component_name,
-                                        ltrim(component_type, '.') as component_type,
+    -- any possible modifications are temporarily stored in a global temporary table
+    insert into content_revision select pc.schema_name,
+                                        pc.package_id,
+                                        pc.package_name,
+                                        pc.component_id,
+                                        ltrim(pc.component_name, '.') as component_name,
+                                        ltrim(pc.component_type, '.') as component_type,
                                         rownum           as component_sequence,
-                                        hierarchical_level,
+                                        pc.hierarchical_level,
                                         systimestamp     as created_at,
-                                        comment_or_code  as original_comment_or_code,
-                                        deprecated_fl    as original_deprecated_fl,
-                                        deprecation_text as original_deprecation_text,
-                                        comment_or_code  as modified_comment_or_code,
-                                        deprecated_fl    as modified_deprecated_fl,
-                                        deprecation_text as modified_deprecation_text,
-                                        0                as priority_fl,
-                                        null             as modified_by,
-                                        null             as modified_at
-                                   from ocd.package_component
+                                        pc.comment_or_code  as original_comment_or_code,
+                                        pc.deprecated_fl    as original_deprecated_fl,
+                                        pc.deprecation_text as original_deprecation_text,
+                                        coalesce(cr.modified_comment_or_code,pc.comment_or_code)    as modified_comment_or_code,
+                                        coalesce(cr.modified_deprecated_fl,pc.deprecated_fl)        as modified_deprecated_fl,
+                                        coalesce(cr.modified_deprecation_text,pc.deprecation_text)  as modified_deprecation_text,
+                                        coalesce(cr.priority_fl, 0) as priority_fl,
+                                        cr.modified_by as modified_by,
+                                        cr.modified_at as modified_at
+                                   from ocd.package_component pc
+                              left join ocd.content_revision_gtt cr on (pc.package_id=cr.package_id and pc.component_id=cr.component_id)
                                   where schema_name = i_schema_name
                                     and package_name = i_package_name;
-
--- UPDATE from gtt?
---TODO sophisticated logic to preserve existing ui comments !!!
     l('WORKER.SYNC_TO_CONTENT_REVISION> data synchronized successfully ('||i_schema_name||'.'||i_package_name||')');
   end sync_to_content_revision;  
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------

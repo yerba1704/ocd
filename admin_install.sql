@@ -67,6 +67,7 @@ prompt >>> create main objects 1/2
 @ddl/table/package_type.tbl
 @ddl/table/type_field.tbl
 @ddl/table/content_revision.tbl
+@ddl/table/content_revision_gtt.tbl
 @ddl/view/package_component.vw
 @ddl/comments.sql
 
@@ -77,11 +78,15 @@ prompt >>> create main objects 1/2
 @ddl/package/worker.pkb
 
 @ddl/trigger/ddl_on_package.trg
+@ddl/trigger/before_delete_content_revision.trg
+
+@ddl/type/stdpub.tps
 --------------------------------------------------------------------------------
 prompt >>> grant necessary roles
 
 @dcl/worker.pks
 @dcl/public/api.pks
+@dcl/public/stdpub.tps
 --------------------------------------------------------------------------------
 prompt >>> create main objects 2/2
 

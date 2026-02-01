@@ -81,9 +81,10 @@ comment on table content_revision is
 comment on column content_revision.schema_name                is 'Name of the schema that owns the package.';
 comment on column content_revision.package_id                 is 'Identifier of the related package.';
 comment on column content_revision.package_name               is 'Name of the package.';
+comment on column content_revision.component_id               is 'Identifier of the related component.';
 comment on column content_revision.component_name             is 'Name of the package component.';
-comment on column content_revision.component_sequence         is 'The sequence number that identifies the position of the component within the package..';
 comment on column content_revision.component_type             is 'The type of the package component.';
+comment on column content_revision.component_sequence         is 'The sequence number that identifies the position of the component within the package..';
 comment on column content_revision.hierarchical_level         is 'Hierarchy level of the component within the package structure.';
 comment on column content_revision.created_at                 is 'Timestamp indicating when the package was analyzed by ora* CODEDOC';
 comment on column content_revision.original_comment_or_code   is 'Original comment text or example code prior to modification.';
@@ -95,6 +96,17 @@ comment on column content_revision.modified_deprecation_text  is 'Updated deprec
 comment on column content_revision.priority_fl                is 'Flag to set the priority of the chosen comment (0 for the original from the source code or 1 for the modified one).';
 comment on column content_revision.modified_by                is 'Name of the user that makes the modification.';
 comment on column content_revision.modified_at                is 'Timestamp indicating when the row was changed.';
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+comment on table content_revision_gtt is
+'Backup all package component information and modification before starting a new analysis. Used to preserve the modified text.';
+comment on column content_revision_gtt.package_id                 is 'Identifier of the related package.';
+comment on column content_revision_gtt.component_id               is 'Identifier of the related component.';
+comment on column content_revision_gtt.modified_comment_or_code   is 'Updated comment text or example code after modification.';
+comment on column content_revision_gtt.modified_deprecated_fl     is 'Updated deprecation flag value after modification.';
+comment on column content_revision_gtt.modified_deprecation_text  is 'Updated deprecation text after modification.';
+comment on column content_revision_gtt.priority_fl                is 'Flag to set the priority of the chosen comment (0 for the original from the source code or 1 for the modified one).';
+comment on column content_revision_gtt.modified_by                is 'Name of the user that makes the modification.';
+comment on column content_revision_gtt.modified_at                is 'Timestamp indicating when the row was changed.';
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 comment on table logs is 'Stores log entries.';
 comment on column logs.log_id is 'Unique identifier of the log entry.';
