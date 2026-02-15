@@ -11,67 +11,40 @@ The description text of each part of a package can be modified by comments in th
 
 ## Example usage
 
-comming soon...
-
-<!--
-To get a basic HTML based single page type:
-
-```plsql
-asdasdsddasds
-```
-
-You can also use a WYSIWYG Editor in ocd-apex
-
-All existing rules and definitions are available in the `ruleset` view:
-
-`select * from occ.ruleset;`
-
-To check a specific rule (singular) pass the id...
-
-`exec occ.api.check_rule(i_rule_id_or_code => 'OCC-30010');`
-
-...or raise an exception if the check failed:
-
-`exec occ.api.check_rules(i_value => OCC.API.MINOR, i_raise_if_fail => true);`
-
-All existing rules can be checked without passing any  parameter:
-
-`exec occ.api.check_rules;`
-
-Each procedure also exists as a table function and provide exactly the same functionality (parameters and behavior are equal). The only difference is the output of the results. The function provide output as a collection and therefore need to be executed as select statement.
-
-`select * from occ.api.check_rules(i_value => 'MINOR');`
-
-is similar to
-
-`exec occ.api.check_rules(i_value => OCC.API.MINOR);`
-
-Here is an example for a SQL statement which use the table function for several specific rules:
+The `API` package provides access to all relevant information in JSON format. Simply use the `information`function:
 
 ```sql
-select * from 
-    (select rule_id from occ.ruleset where rule_id like '%-40%') several_rule_ids,
-    occ.api.check_rule(i_rule_id_or_code => several_rule_ids.rule_id)
+select ocd.api.information(i_package_name => 'PKG_SAMPLE',
+                           i_schema_name  => 'OCD_DEMO')
+  from dual;
 ```
 
-The full PL/SQL Package Reference for the public API package can be found [here](doc/api.adoc). -->
+With the JSON output you can build whatever you want. Look before getting started at the existing __ora* CODEDOC publishers__ [here](doc/ocdp.md) to see what has already been implemented by the community.
 
-## Data Model
+When you get something like this...
 
-All information from comments in the package specification are stored in these tables:
-
-```
-SCHEMA_PACKAGE
-      ├PACKAGE_CONSTANT
-      ├PACKAGE_EXCEPTION
-      ├PACKAGE_SUBPROGRAM
-      │       ├SUBPROGRAM_ARGUMENT
-      │       └SUBPROGRAM_EXAMPLE
-      └PACKAGE_TYPE
-              └TYPE_FIELD
+```json
+{"name":"YOUR_PACKAGE_NAME","status":"NO_DATA_FOUND"}
 ```
 
-<!--hier tabelle die zeigt wie aufbau und zusammenhang... generieren mit /home/alegria/Development/_git/yerba1704/spielwiese/ocd/doc/adhoc_data_model_from_dictionary.sql -->
+...simply analyze the package explicitly using:
+
+```plsql
+begin
+  ocd.api.inspect(
+    i_package_code => dbms_metadata.get_ddl('PACKAGE_SPEC', 'API'),
+    i_package_name => 'API'
+  );
+end;
+```
+
+You can also recompile the package in your IDE or via command.
+
+```plsql
+alter package YOUR_PACKAGE_NAME compile;
+```
+
+<!--The full PL/SQL Package Reference for the public API package can be found [here](doc/api.adoc). -->
 
 ## ora* CODEDOC syntax (OCDs)
 

@@ -40,18 +40,26 @@ as
       io_last_type     in out nocopy varchar2,
       io_last_name     in out nocopy varchar2);
 
-
   -- Improve content readability and convert datatype.
   function refine_comment(
       i_comment in clob)
     return varchar2;
-
 
   -- Extract argument/field comments (if exists) and example code (if exists) and remove it from original comment.
   procedure inspect_subprogram_type_comment(
       io_comment            in out nocopy clob,
       o_argument_or_field_c out nocopy sys.ora_mining_varchar2_nt,
       o_example_c           out nocopy sys.ora_mining_varchar2_nt);
+
+
+  -- Return relevant information in json format.
+  -- @The name of the package.
+  -- @The name of the owner.
+  -- ^select ocd.worker.information('API','OCD') from dual;
+  function information(
+      i_package_name in varchar2,
+      i_schema_name  in varchar2)
+    return clob;
 
 
   -- Return all package names comma separated for the user (for use in OCD-APEX).

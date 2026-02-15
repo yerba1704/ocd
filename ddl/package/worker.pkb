@@ -245,7 +245,7 @@ create or replace package body worker as
     l_last_name dbms_id_30;
   begin
     l('WORKER.SPLIT_PACKAGE> start analyzing source code ('||i_schema_name||'.'||i_package_name||')');
-    l_token_t:=plsql_lexer.lex(p_source => i_package_code);
+    execute immediate'begin :0 := plsql_lexer.lex(p_source => :1); end;' using out l_token_t, in i_package_code;
     l('WORKER.SPLIT_PACKAGE> token varray received');
     
     for i in 1..l_token_t.count loop
@@ -546,6 +546,130 @@ create or replace package body worker as
       o_argument_or_field_c:=sys.ora_mining_varchar2_nt();
     end if;
   end inspect_subprogram_type_comment;
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  function information(
+      i_package_name in varchar2,
+      i_schema_name  in varchar2)
+    return clob
+  is
+    c_package_name constant dbms_id_30 not null:=upper(i_package_name);
+    c_schema_name constant dbms_id_30 not null:=upper(i_schema_name);
+    lv_out clob;
+  begin
+--    with
+--      jsn_base as (
+--    select content_revision.schema_name, content_revision.package_name,
+--           content_revision.component_name, content_revision.component_type,
+--           case when priority_fl=1 then modified_comment_or_code else content_revision.original_comment_or_code end component_desc,
+--           component_id, parent_id,
+--           component_sequence,
+--           content_revision.hierarchical_level
+--      from content_revision join package_component using (package_id, component_id)
+--      ), jsn_l2 as (
+--      select * from jsn_base where hierarchical_level=2
+--      ), jsn_type_field as (
+--      select parent_id,
+--             json_arrayagg(
+--              json_object (
+--                key 'name' value component_name,
+--                key 'type' value component_type,
+--                key 'desc' value component_desc
+--              ) order by component_sequence
+--             ) as jsn
+--      from jsn_base where hierarchical_level=3 and component_type='FIELD' group by parent_id
+--      )
+--      select  json_object (
+--                key 'name' value jsn_base.package_name,
+--                key 'components' value json_arrayagg(
+--                  json_object (
+--                       key 'name' value jsn_l2.component_name,
+--                       key 'type' value jsn_l2.component_type,
+--                       key 'desc' value jsn_l2.component_desc,
+--                       key 'fields' value jsn_type_field.jsn
+--                       absent on null
+--                  ) order by jsn_l2.component_sequence
+--                )
+--              ) as v
+--         into lv_out
+--         from jsn_base
+--         join jsn_l2         on (jsn_base.component_id=jsn_l2.parent_id )
+--    left join jsn_type_field on (jsn_l2.component_id=jsn_type_field.parent_id)
+--    --left join jsn_subprogram_argument
+--    --left join jsn_subprogram_example
+--      where jsn_base.schema_name=c_schema_name and jsn_base.package_name=c_package_name
+--     group by jsn_base.schema_name, jsn_base.package_name;
+    with
+      jsn_base as (
+    select content_revision.schema_name, content_revision.package_name,
+           content_revision.component_name, content_revision.component_type,
+           case when priority_fl=1 then modified_comment_or_code else content_revision.original_comment_or_code end component_desc,
+           component_id, parent_id,
+           component_sequence,
+           content_revision.hierarchical_level
+      from content_revision join package_component using (package_id, component_id)
+      ), jsn_l2 as (
+      select * from jsn_base where hierarchical_level=2
+      ), jsn_type_field as (
+      select parent_id,
+             json_arrayagg(
+              json_object (
+                key 'name' value component_name,
+                key 'type' value component_type,
+                key 'desc' value component_desc
+              ) order by component_sequence
+             ) as jsn
+      from jsn_base where hierarchical_level=3 and component_type='FIELD' group by parent_id
+      ), jsn_subprogram_argument as (
+      select parent_id,
+             json_arrayagg(
+              json_object (
+                key 'name' value component_name,
+                key 'type' value component_type,
+                key 'desc' value component_desc
+              ) order by component_sequence
+             ) as jsn
+      from jsn_base where hierarchical_level=3 and component_type='ARGUMENT' group by parent_id
+      ), jsn_subprogram_example as (
+      select parent_id,
+             json_arrayagg(
+              json_object (
+                key 'name' value component_name,
+                key 'type' value component_type,
+                key 'desc' value component_desc
+              ) order by component_sequence
+             ) as jsn
+      from jsn_base where hierarchical_level=3 and component_type='EXAMPLE' group by parent_id
+      )
+      select  json_object (
+                key 'name' value jsn_base.package_name,
+                key 'components' value json_arrayagg(
+                  json_object (
+                       key 'name' value jsn_l2.component_name,
+                       key 'type' value jsn_l2.component_type,
+                       key 'desc' value jsn_l2.component_desc,
+                       key 'fields' value jsn_type_field.jsn,
+                       key 'arguments' value jsn_subprogram_argument.jsn,
+                       key 'examples'  value jsn_subprogram_example.jsn
+                        absent on null
+                  ) order by jsn_l2.component_sequence
+                )
+              ) as v
+         into lv_out
+         from jsn_base
+         join jsn_l2 on (jsn_base.component_id=jsn_l2.parent_id )
+    left join jsn_type_field          on (jsn_l2.component_id=jsn_type_field.parent_id)
+    left join jsn_subprogram_argument on (jsn_l2.component_id=jsn_subprogram_argument.parent_id)
+    left join jsn_subprogram_example  on (jsn_l2.component_id=jsn_subprogram_example.parent_id)
+      where jsn_base.schema_name=c_schema_name and jsn_base.package_name=c_package_name
+     group by jsn_base.schema_name, jsn_base.package_name;
+    
+    return lv_out;
+  exception
+    when no_data_found then 
+      return '{"name":"'||c_package_name||'","status":"NO_DATA_FOUND"}';
+    when others then
+      raise;
+  end information;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   function schema_packages(
       i_schema_name in varchar2)

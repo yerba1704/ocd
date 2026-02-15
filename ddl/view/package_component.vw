@@ -122,6 +122,7 @@ with collection as (
          rpad('.',(level - 1) * 2, '.') || component_name  as component_name,
          comment_or_code,
          component_id,
+         parent_id,
          table_name,
          deprecated_fl,
          deprecation_text

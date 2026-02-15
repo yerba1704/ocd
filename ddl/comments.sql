@@ -123,6 +123,7 @@ comment on column package_component.component_type      is 'The type of the pack
 comment on column package_component.component_name      is 'Name of the package component.';
 comment on column package_component.comment_or_code     is 'Comment text or example code.';
 comment on column package_component.component_id        is 'Identifier of the referenced component entity.';
+comment on column package_component.parent_id           is 'Identifier of the referenced parent entity.';
 comment on column package_component.table_name          is 'Name of the table storing the component definition.';
 comment on column package_component.deprecated_fl       is 'Flag indicating whether the component is deprecated.';
 comment on column package_component.deprecation_text    is 'Text explaining the reason for component deprecation and recommended alternatives.';

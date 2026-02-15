@@ -23,27 +23,9 @@ as
   is
     c_package_name constant dbms_id_30 not null:=upper(i_package_name);
     c_schema_name constant dbms_id_30 not null:=upper(i_schema_name);
+    lv_out clob;
   begin
-  
-  -->select * from package_component where package_name='API';
-  
-    -- vermutlich nach worker "greifen" um auf die eigentlichen daten zuzukommen...
-    return '{
-  "name":"API",
-  "comment_or_code":"Interface package for using ora* CODEDOC.",
-  "subprogram":[
-    {
-      "name":"INSPECT",
-      "comment_or_code":"Split source code in relevant information and save comments.",
-      "argument":[
-        {
-          "name":"I_PACKAGE_CODE",
-          "comment_or_code": null
-        }
-      ]
-    }
-  ]
-}';
+    return worker.information(i_package_name => c_package_name, i_schema_name => c_schema_name);
   end information;
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 end api;
