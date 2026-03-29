@@ -1,4 +1,6 @@
-<!-- allgemeines kleinkram buttons wie coverage und co. sowie buy me a beer -->
+<p>
+  <img src="https://img.shields.io/badge/Status-Work%20In%20Progress-yellow?style=flat-square" alt="Work in progress...">
+</p>
 
 # ora* CODEDOC
 

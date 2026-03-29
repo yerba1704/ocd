@@ -4,7 +4,7 @@ comment on column schema_package.schema_name                  is 'Name of the sc
 comment on column schema_package.package_id                   is 'Unique identifier of the package.';
 comment on column schema_package.package_name                 is 'Name of the package.';
 comment on column schema_package.package_comment              is 'Textual description of the package purpose and behavior.';
-comment on column schema_package.created_at                   is 'Timestamp indicating when the package was analyzed by ora* CODEDOC';
+comment on column schema_package.created_at                   is 'Timestamp indicating when the package was analyzed by ora* CODEDOC.';
 comment on column schema_package.deprecated_fl                is 'Flag indicating whether the package is deprecated.';
 comment on column schema_package.deprecation_text             is 'Text explaining the reason for package deprecation and recommended alternatives.';
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ comment on column subprogram_argument.order_sequence          is 'Position of th
 comment on table subprogram_example is
 'Stores usage examples or sample calls for package subprograms to illustrate correct usage.';
 comment on column subprogram_example.subprogram_id            is 'Identifier of the subprogram demonstrated by the example.';
-comment on column subprogram_example.example_id               is 'Unique identifier of the example.';
+comment on column subprogram_example.example_id               is 'Unique identifier of the subprogram example.';
 comment on column subprogram_example.example_name             is 'Generic name of the example.';
 comment on column subprogram_example.example_code             is 'Code sample demonstrating usage of the subprogram.';
 comment on column subprogram_example.order_sequence           is 'Sequence number defining the example ordering within the package.';
@@ -81,12 +81,13 @@ comment on table content_revision is
 comment on column content_revision.schema_name                is 'Name of the schema that owns the package.';
 comment on column content_revision.package_id                 is 'Identifier of the related package.';
 comment on column content_revision.package_name               is 'Name of the package.';
+comment on column content_revision.parent_id                  is 'Identifier of the related parent component.';
 comment on column content_revision.component_id               is 'Identifier of the related component.';
 comment on column content_revision.component_name             is 'Name of the package component.';
 comment on column content_revision.component_type             is 'The type of the package component.';
-comment on column content_revision.component_sequence         is 'The sequence number that identifies the position of the component within the package..';
+comment on column content_revision.component_sequence         is 'The sequence number that identifies the position of the component within the package.';
 comment on column content_revision.hierarchical_level         is 'Hierarchy level of the component within the package structure.';
-comment on column content_revision.created_at                 is 'Timestamp indicating when the package was analyzed by ora* CODEDOC';
+comment on column content_revision.created_at                 is 'Timestamp indicating when the package was analyzed by ora* CODEDOC.';
 comment on column content_revision.original_comment_or_code   is 'Original comment text or example code prior to modification.';
 comment on column content_revision.original_deprecated_fl     is 'Original deprecation flag value prior to modification.';
 comment on column content_revision.original_deprecation_text  is 'Original deprecation text prior to modification.';
@@ -115,15 +116,15 @@ comment on column logs.created_at is 'Timestamp indicating when the log entry wa
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 comment on table package_component is
 'View to list all components of a package specification row by row.';
-comment on column package_component.package_id          is 'Identifier of the package to which the component belongs.';
-comment on column package_component.package_name        is 'Name of the package to which the component belongs.';
+comment on column package_component.package_id          is 'Identifier of the related package.';
+comment on column package_component.package_name        is 'Name of the package.';
 comment on column package_component.created_at          is 'Timestamp indicating when the package was analyzed by ora* CODEDOC.';
 comment on column package_component.hierarchical_level  is 'Hierarchy level of the component within the package structure.';
 comment on column package_component.component_type      is 'The type of the package component.';
 comment on column package_component.component_name      is 'Name of the package component.';
 comment on column package_component.comment_or_code     is 'Comment text or example code.';
-comment on column package_component.component_id        is 'Identifier of the referenced component entity.';
-comment on column package_component.parent_id           is 'Identifier of the referenced parent entity.';
+comment on column package_component.component_id        is 'Identifier of the related component.';
+comment on column package_component.parent_id           is 'Identifier of the related parent component.';
 comment on column package_component.table_name          is 'Name of the table storing the component definition.';
 comment on column package_component.deprecated_fl       is 'Flag indicating whether the component is deprecated.';
 comment on column package_component.deprecation_text    is 'Text explaining the reason for component deprecation and recommended alternatives.';

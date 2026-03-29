@@ -23,7 +23,6 @@ as
   is
     c_package_name constant dbms_id_30 not null:=upper(i_package_name);
     c_schema_name constant dbms_id_30 not null:=upper(i_schema_name);
-    lv_out clob;
   begin
     return worker.information(i_package_name => c_package_name, i_schema_name => c_schema_name);
   end information;
