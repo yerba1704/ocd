@@ -16,9 +16,7 @@ The description text of each part of a package can be modified by comments in th
 The `API` package provides access to all relevant information in JSON format. Simply use the `information`function:
 
 ```sql
-select ocd.api.information(i_package_name => 'PKG_SAMPLE',
-                           i_schema_name  => 'OCD_DEMO')
-  from dual;
+select ocd.api.information('PKG_SAMPLE') from dual;
 ```
 
 With the JSON output you can build whatever you want. Look before getting started at the existing __ora* CODEDOC publishers__ [here](doc/ocdp.md) to see what has already been implemented by the community.
