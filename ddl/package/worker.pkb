@@ -570,7 +570,8 @@ create or replace package body worker as
       select  p.owner as sn, 
               p.object_name as pn,
               case when a.position=0 then 'function' end as t,
-              lower(a.object_name) as n,
+--              lower(a.object_name) as n,
+              lower(p.procedure_name) as n,
               p.overload as ol,
               lower(a.argument_name) as an,
               case when a.argument_name is not null then lower(a.in_out) end as io,
@@ -586,8 +587,8 @@ create or replace package body worker as
                 then chr(10)||'  return '||case when a.data_type='TABLE'
                                             then case when type_owner!='PUBLIC' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)
                                             else lower(a.data_type)
-                                          end||';'
-              end as rv,
+                                          end
+              end||';' as rv,
               a.position as p,
               a.argument_default as dv
               --> owner.package_name.object_name
@@ -613,7 +614,7 @@ create or replace package body worker as
                 and decode(arg.overload,c.overload,1,0)=1 )
            where arg.owner=:0
              and arg.package_name=:1
-        ) a on (p.owner=a.owner
+                ) a on (p.owner=a.owner
             and p.object_name=a.package_name
             and p.procedure_name=a.object_name
             and decode(p.overload,a.overload,1,0)=1 )
@@ -674,7 +675,6 @@ create or replace package body worker as
              json_arrayagg(
               json_object (
                 key 'name' value component_name,
---                key 'type' value component_type,
                 key 'desc' value component_desc
               ) order by component_sequence
              ) as jsn
@@ -685,8 +685,7 @@ create or replace package body worker as
              json_arrayagg(
               json_object (
                 key 'name' value component_name,
---                key 'type' value component_type,
-                key 'desc' value component_desc
+                key 'code' value component_desc
               ) order by component_sequence
              ) as jsn
       from jsn_base where hierarchical_level=3 and component_type='EXAMPLE' group by parent_id
@@ -700,13 +699,11 @@ create or replace package body worker as
                     key 'name' value jsn_l2.component_name,
                     -- weiter oben via left join subprogram_detail geholt, alle functions haben min. return type und somit greift der join; ergo sind alle restlichen SUBPROGRAMS automatisch procedures...
                     key 'type' value decode(jsn_l2.component_type,'SUBPROGRAM','PROCEDURE',jsn_l2.component_type),
---                    key 'type' value jsn_l2.component_type,
                     key 'desc' value jsn_l2.component_desc,
                     key 'syntax' value jsn_l2.stx,
                     key 'fields' value jsn_type_field.jsn,
-                    key 'parameters' value jsn_subprogram_argument.jsn
-    --                       ,
-    --                       key 'examples'  value jsn_subprogram_example.jsn
+                    key 'parameters' value jsn_subprogram_argument.jsn,
+                    key 'examples' value jsn_subprogram_example.jsn
                     absent on null
                   ) order by jsn_l2.component_sequence
                 returning clob)
@@ -718,7 +715,7 @@ create or replace package body worker as
          join jsn_l2 on (jsn_base.component_id=jsn_l2.parent_id )
     left join jsn_type_field          on (jsn_l2.component_id=jsn_type_field.parent_id)
     left join jsn_subprogram_argument on (jsn_l2.component_id=jsn_subprogram_argument.parent_id)
---    left join jsn_subprogram_example  on (jsn_l2.component_id=jsn_subprogram_example.parent_id)
+    left join jsn_subprogram_example  on (jsn_l2.component_id=jsn_subprogram_example.parent_id)
       where jsn_base.schema_name=:4 and jsn_base.package_name=:5
 --      where jsn_base.schema_name=c_schema_name and jsn_base.package_name=c_package_name
      group by jsn_base.schema_name, jsn_base.package_name, jsn_base.component_desc
