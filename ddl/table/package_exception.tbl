@@ -4,7 +4,7 @@ create table package_exception (
     constraint pe_package_id_r references schema_package ( package_id ) on delete cascade,
   exception_id      raw(16) generated always as ( standard_hash(package_id||exception_name, 'MD5') )
     constraint pe_exception_id_p primary key,
-  exception_name    varchar2(30 char)
+  exception_name    varchar2(128 char)
     constraint pe_exception_name_nn_c not null
     constraint pe_exception_name_uc_c check ( exception_name = upper(exception_name) ),
   -----------------

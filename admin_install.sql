@@ -28,7 +28,6 @@ grant create session,
       create sequence,
       create view,
       create procedure,
-      create type,
       create trigger,
       administer database trigger
    to ocd;
@@ -79,14 +78,11 @@ prompt >>> create main objects 1/2
 
 @ddl/trigger/ddl_on_package.trg
 @ddl/trigger/before_delete_content_revision.trg
-
-@ddl/type/stdpub.tps
 --------------------------------------------------------------------------------
 prompt >>> grant necessary roles
 
 @dcl/worker.pks
 @dcl/public/api.pks
-@dcl/public/stdpub.tps
 --------------------------------------------------------------------------------
 prompt >>> create main objects 2/2
 

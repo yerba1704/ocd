@@ -4,7 +4,7 @@ create table package_constant (
     constraint pc_package_id_r references schema_package ( package_id ) on delete cascade,
   constant_id       raw(16) generated always as ( standard_hash(package_id||constant_name, 'MD5') )
     constraint pc_constant_id_p primary key,
-  constant_name     varchar2(30 char)
+  constant_name     varchar2(128 char)
     constraint pc_constant_name_nn_c not null
     constraint pc_constant_name_uc_c check ( constant_name = upper(constant_name) ),
   ----------------

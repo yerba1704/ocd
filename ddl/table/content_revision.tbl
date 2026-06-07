@@ -1,11 +1,11 @@
 create table content_revision (
-  schema_name                 varchar2(30 char)
+  schema_name                 varchar2(128 char)
     constraint cr_schema_name_nn_c not null
     constraint cr_schema_name_uc_c check ( schema_name = upper(schema_name) ),
   package_id                  raw(16)
     constraint cr_package_id_nn_c not null
     constraint cr_package_id_r references schema_package ( package_id ) on delete cascade,
-  package_name                varchar2(30 char)
+  package_name                varchar2(128 char)
     constraint cr_package_name_nn_c not null
     constraint cr_package_name_uc_c check ( package_name = upper(package_name) ),
   ---------------
@@ -14,7 +14,7 @@ create table content_revision (
     constraint cr_component_id_nn_c not null,
   component_name              varchar2(128 char)
     constraint cr_component_name_nn_c not null,
-  component_type              varchar2(128 char)
+  component_type              varchar2(30 char)
     constraint cr_component_type_nn_c not null,
   component_sequence          integer
     constraint cr_component_sequence_nn_c not null,

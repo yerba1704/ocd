@@ -4,7 +4,7 @@ create table package_subprogram (
     constraint ps_package_id_r references schema_package ( package_id ) on delete cascade,
   subprogram_id       raw(16) generated always as ( standard_hash(package_id||subprogram_name||order_sequence, 'MD5') )
     constraint ps_subprogram_id_p primary key,
-  subprogram_name     varchar2(30 char)
+  subprogram_name     varchar2(128 char)
     constraint ps_subprogram_name_nn_c not null
     constraint ps_subprogram_name_uc_c check ( subprogram_name = upper(subprogram_name) ),
   ------------------

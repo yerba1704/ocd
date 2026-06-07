@@ -243,7 +243,7 @@ create or replace package body worker as
     l_package_id schema_package.package_id%type;
     l_order_sequence pls_integer:=0;
     l_last_type dbms_id_30;
-    l_last_name dbms_id_30;
+    l_last_name dbms_id_128;
   begin
     l('WORKER.SPLIT_PACKAGE> start analyzing source code ('||i_schema_name||'.'||i_package_name||')');
     execute immediate'begin :0 := plsql_lexer.lex(p_source => :1); end;' using out l_token_t, in i_package_code;
@@ -359,6 +359,7 @@ create or replace package body worker as
                                                                              --order_sequence
                                                                              i_order_sequence );
                                     continue;
+                                    exception when others then raise;
                                   end constant_handling;
                                   /*
                                   [j-1]     [j]
@@ -553,8 +554,8 @@ create or replace package body worker as
       i_schema_name  in varchar2)
     return clob
   is
-    c_package_name constant dbms_id_30 not null:=upper(i_package_name);
-    c_schema_name constant dbms_id_30 not null:=upper(i_schema_name);
+    c_package_name constant dbms_id_128 not null:=upper(i_package_name);
+    c_schema_name constant dbms_id_128 not null:=upper(i_schema_name);
     
     c_stmt constant clob:=q'[
     with

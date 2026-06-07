@@ -1,10 +1,10 @@
 create table schema_package (
-  schema_name       varchar2(30 char)
+  schema_name       varchar2(128 char)
     constraint sp_schema_name_nn_c not null
     constraint sp_schema_name_uc_c check ( schema_name = upper(schema_name) ),
   package_id        raw(16) generated always as ( standard_hash(schema_name||package_name, 'MD5') )
     constraint sp_package_id_p primary key,
-  package_name      varchar2(30 char)
+  package_name      varchar2(128 char)
     constraint sp_package_name_nn_c not null
     constraint sp_package_name_uc_c check ( package_name = upper(package_name) ),
   ---------------
