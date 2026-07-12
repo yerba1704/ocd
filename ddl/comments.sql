@@ -58,6 +58,20 @@ comment on column subprogram_example.example_name             is 'Generic name o
 comment on column subprogram_example.example_code             is 'Code sample demonstrating usage of the subprogram.';
 comment on column subprogram_example.order_sequence           is 'Sequence number defining the example ordering within the package.';
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+comment on table package_subtype is
+'Stores subtypes declared within a package specification, including their names and extracted comment text. Also the subtype base type, range values, and constraint information.';
+comment on column package_subtype.package_id                  is 'Identifier of the package in which the subtype is declared.';
+comment on column package_subtype.subtype_id                  is 'Unique identifier of the subtype.';
+comment on column package_subtype.subtype_name                is 'Declared name of the subtype.';
+comment on column package_subtype.subtype_comment             is 'Textual description of the subtype purpose and usage.';
+comment on column package_subtype.subtype_basetype            is 'Declared datatype of the subtype.';
+comment on column package_subtype.subtype_null_fl             is 'Flag indicating whether the subtype allows NULL values.';
+comment on column package_subtype.subtype_range_low_value     is 'Declared low value in the range assigned to the subtype.';
+comment on column package_subtype.subtype_range_high_value    is 'Declared low value in the range assigned to the subtype.';
+comment on column package_subtype.deprecated_fl               is 'Flag indicating whether the subtype is deprecated.';
+comment on column package_subtype.deprecation_text            is 'Text explaining the reason for subtype deprecation and recommended alternatives.';
+comment on column package_subtype.order_sequence              is 'Sequence number defining the subtype ordering within the package.';
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 comment on table package_type is
 'Stores collections and records declared within a package specification, including their names and extracted comment text.';
 comment on column package_type.type_id                        is 'Unique identifier of the type.';

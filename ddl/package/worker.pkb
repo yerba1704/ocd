@@ -342,7 +342,7 @@ create or replace package body worker as
                                       l_constant_datatype:=substr(l_constant_datatype,1,length(l_constant_datatype)-4);
                                     end if;
                                     -- add space between number and char/byte if exists
-                                    l_constant_datatype:=regexp_replace(l_constant_datatype,'((byte|char)\))$', ' \1');
+                                    l_constant_datatype:=regexp_replace(l_constant_datatype,'((byte|char)\))$', ' \1', 1, 1, 'i');
                                     l_constant_datatype:=upper(l_constant_datatype);
                                     
                                     insert into ocd.package_constant values (i_package_id, default, io_last_name, refine_comment(l_comment),
@@ -408,11 +408,79 @@ create or replace package body worker as
 
                                   https://docs.oracle.com/en/database/oracle/oracle-database/23/lnpls/function-declaration-and-definition.html
                                   */
+          when 'SUBTYPE'    then  io_last_name:=upper(i_block_t(j+1).value);
+                                  io_last_type:=upper(i_block_t(j).value);
+                                  <<subtype_handling>>
+                                  declare
+                                    l_subtype_basetype ocd.package_subtype.subtype_basetype%type;
+                                    is_complex_basetype boolean := false;
+                                    l_subtype_null_fl  ocd.package_subtype.subtype_null_fl%type:=1;
+                                    l_subtype_range_low_value ocd.package_subtype.subtype_range_low_value%type;
+                                    l_subtype_range_high_value ocd.package_subtype.subtype_range_high_value%type;
+                                    x pls_integer:=3;
+                                  begin
+                                    loop
+                                      exit when not i_block_t.exists(j+x);
+                                      -- simple basetypes 
+                                      if x=3 then l_subtype_basetype:=upper(i_block_t(j+x).value); end if;
+                                      -- complex basetypes
+                                      if i_block_t(j+x).value = '(' then is_complex_basetype:=true; end if;
+                                      if is_complex_basetype then l_subtype_basetype:=l_subtype_basetype||upper(i_block_t(j+x).value); end if;
+                                      if i_block_t(j+x).value = ')' then is_complex_basetype:=false; end if;
+                                      -- range constraint
+                                      if upper(i_block_t(j+x).value) = 'RANGE' then
+                                        -- first negative
+                                        if i_block_t(j+x+1).value='-' then
+                                          l_subtype_range_low_value:=to_number( i_block_t(j+x+1).value||i_block_t(j+x+2).value );
+                                          -- second negative
+                                          if i_block_t(j+x+4).value='-' then
+                                            l_subtype_range_high_value:=to_number( i_block_t(j+x+4).value||i_block_t(j+x+5).value );
+                                          else
+                                            l_subtype_range_high_value:=to_number( i_block_t(j+x+4).value);
+                                          end if;
+                                        else
+                                          l_subtype_range_low_value :=to_number( i_block_t(j+x+1).value );
+                                          l_subtype_range_high_value:=to_number( i_block_t(j+x+3).value );
+                                        end if;
+                                      end if;
+                                      -- not null constraint
+                                      if upper(i_block_t(j+x).value) = 'NULL' and upper(i_block_t(j+x-1).value) = 'NOT' then l_subtype_null_fl:=0; end if;
+                                      x:=x+1;
+                                    end loop;
+                                    -- add space between number and char/byte if exists
+                                    l_subtype_basetype:=regexp_replace(l_subtype_basetype,'((byte|char)\))$', ' \1', 1, 1, 'i');
+                                    l_subtype_basetype:=upper(l_subtype_basetype);
+                                    
+                                    insert into ocd.package_subtype values (i_package_id, default, io_last_name, refine_comment(l_comment),
+                                                                            -- subtype_basetype
+                                                                            l_subtype_basetype,
+                                                                            -- subtype_null_fl
+                                                                            l_subtype_null_fl,
+                                                                            -- range_low_value
+                                                                            l_subtype_range_low_value,
+                                                                            -- range_high_value
+                                                                            l_subtype_range_high_value,
+                                                                            --deprecated_fl
+                                                                            default,
+                                                                            -- deprecated_warning
+                                                                            default,
+                                                                            --order_sequence
+                                                                            i_order_sequence );
+                                    continue;
+                                    exception when others then raise;
+                                  end subtype_handling;
+                                  /*
+                                  [j]     [j+1]
+                                  subtype unconstrained_subtype is base_type;
+
+                                  https://docs.oracle.com/en/database/oracle/oracle-database/26/lnpls/user-defined-pl-sql-subtypes.html
+                                  */
           when 'TYPE'       then  -- avoid ...%type syntax and type column names
                                   if not i_block_t.exists(j-1) or ( (i_block_t.exists(j-1) and i_block_t(j-1).type!='%') 
                                                                 and (i_block_t.exists(j-1) and i_block_t(j-1).type!='.') ) then
                                     io_last_name:=upper(i_block_t(j+1).value);
-                                    io_last_type:='TYPE';
+                                    io_last_type:=upper(i_block_t(j).value);
+                                    --io_last_type:='TYPE';
 
                                     to_package_type(i_type_name => io_last_name, i_comment => l_comment, i_block_iteration => j,
                                                     i_package_id => i_package_id, i_order_sequence => i_order_sequence, i_block_t => i_block_t);
@@ -434,19 +502,22 @@ create or replace package body worker as
                                     -- current object_name match last_name
                                     if upper(i_block_t(j+3).value)=io_last_name then
                                       case io_last_type
-                                        when 'CONSTANT' then 
+                                        when 'CONSTANT' then
                                           update ocd.package_constant
                                              set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and constant_name=io_last_name;
-                                        when 'EXCEPTION' then 
+                                        when 'EXCEPTION' then
                                           update ocd.package_exception
                                              set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and exception_name=io_last_name;
-                                        when 'SUBPROGRAM' then 
+                                        when 'SUBPROGRAM' then
                                           update ocd.package_subprogram
                                              set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and subprogram_name=io_last_name;
-                                        when 'TYPE' then 
+                                        when 'SUBTYPE' then
+                                          update ocd.package_subtype
+                                             set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and subtype_name=io_last_name;
+                                        when 'TYPE' then
                                           update ocd.package_type
                                              set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id and type_name=io_last_name;
-                                        when 'PACKAGE' then 
+                                        when 'PACKAGE' then
                                           update ocd.schema_package
                                              set deprecated_fl=1, deprecation_text=l_dep_msg where package_id=i_package_id;
                                         else 

@@ -1,0 +1,26 @@
+create table package_subtype (
+  package_id        raw(16)
+    constraint pu_package_id_nn not null
+    constraint pu_package_id_r references schema_package ( package_id ) on delete cascade,
+  subtype_id        raw(16) generated always as ( standard_hash(package_id||subtype_name, 'MD5') )
+    constraint pu_subtype_id_p primary key,
+  subtype_name      varchar2(128 char)
+    constraint pu_subtype_name_nn_c not null
+    constraint pu_subtype_name_uc_c check ( subtype_name = upper(subtype_name) ),
+  ----------------
+  subtype_comment   varchar2(4000 char),
+  subtype_basetype  varchar2(255 char)
+    constraint pu_subtype_datatype_nn_c not null
+    constraint pu_subtype_datatype_uc_c check ( subtype_basetype = upper(subtype_basetype) ),
+  subtype_null_fl   integer default 1
+    constraint pu_subtype_null_fl_nn_c not null
+    constraint pu_subtype_null_fl_in_c check ( subtype_null_fl in (0,1) ),
+  subtype_range_low_value  integer,
+  subtype_range_high_value integer,
+  deprecated_fl     integer default 0
+    constraint pu_deprecated_fl_nn_c not null
+    constraint pu_deprecated_fl_in_c check ( deprecated_fl in (0,1) ),
+  deprecation_text  varchar2(4000 char),
+  order_sequence    integer
+    constraint pu_order_sequence_nn_c not null
+);

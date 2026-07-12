@@ -63,6 +63,7 @@ prompt >>> create main objects 1/2
 @ddl/table/package_subprogram.tbl
 @ddl/table/subprogram_argument.tbl
 @ddl/table/subprogram_example.tbl
+@ddl/table/package_subtype.tbl
 @ddl/table/package_type.tbl
 @ddl/table/type_field.tbl
 @ddl/table/content_revision.tbl

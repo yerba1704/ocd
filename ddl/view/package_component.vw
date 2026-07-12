@@ -16,6 +16,20 @@ with collection as (
       from  schema_package
   union all
     select  package_id            as parent_id,
+            subtype_id            as component_id,
+            'SUBTYPE'             as component_type,
+            'PACKAGE_SUBTYPE'     as table_name,
+            subtype_name          as component_name,
+            subtype_comment       as comment_or_code,
+            order_sequence        as order_sequence,
+            null                  as created_at,
+            deprecated_fl         as deprecated_fl,
+            deprecation_text      as deprecation_text,
+            null                  as schema_name,
+            null                  as package_name
+      from  package_subtype
+  union all
+    select  package_id            as parent_id,
             constant_id           as component_id,
             'CONSTANT'            as component_type,
             'PACKAGE_CONSTANT'    as table_name,

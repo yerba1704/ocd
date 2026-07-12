@@ -32,7 +32,6 @@ None, some or all components of a package can be described in source code.
 
 :information_source: Currently not all components of a package are supported by OCDs. Future releases may also include:
 
-- Subtypes
 - Variables
 - Cursors
 
@@ -94,6 +93,15 @@ Leading white-space characters are preserved in example comments and not trimmed
 --  dbms_output.put_line( 'square of 2 is '||f_square(2) );
 --end;
 function f_square(i_value number default 3) return number;
+```
+
+### Subtype description
+
+Right before the declaration.
+
+```plsql
+-- This is an example of a subtype description.
+subtype counter is naturaln;
 ```
 
 ### Constant description
