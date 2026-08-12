@@ -772,6 +772,8 @@ create or replace package body worker as
                     -- weiter oben via left join subprogram_detail geholt, alle functions haben min. return type und somit greift der join; ergo sind alle restlichen SUBPROGRAMS automatisch procedures...
                     key 'type' value decode(jsn_l2.component_type,'SUBPROGRAM','PROCEDURE',jsn_l2.component_type),
                     key 'desc' value jsn_l2.component_desc,
+                    key 'value' value package_constant.constant_value,
+                    key 'datatype' value package_constant.constant_datatype,
                     key 'syntax' value jsn_l2.stx,
                     key 'fields' value jsn_type_field.jsn,
                     key 'parameters' value jsn_subprogram_argument.jsn,
@@ -788,6 +790,7 @@ create or replace package body worker as
     left join jsn_type_field          on (jsn_l2.component_id=jsn_type_field.parent_id)
     left join jsn_subprogram_argument on (jsn_l2.component_id=jsn_subprogram_argument.parent_id)
     left join jsn_subprogram_example  on (jsn_l2.component_id=jsn_subprogram_example.parent_id)
+    left join package_constant        on (jsn_l2.component_id=package_constant.constant_id)
       where jsn_base.schema_name=:4 and jsn_base.package_name=:5
 --      where jsn_base.schema_name=c_schema_name and jsn_base.package_name=c_package_name
      group by jsn_base.schema_name, jsn_base.package_name, jsn_base.component_desc
