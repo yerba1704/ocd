@@ -23,7 +23,7 @@ With the JSON output you can build whatever you want. Look before getting starte
 
 There are three ways to extract all the relevant information from the source code:
 
-1. compile the source
+1. compile the source code via `CREATE OR REPLACE...`
 
 2. recompile the package in your IDE or via command.
 
