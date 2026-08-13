@@ -9,11 +9,11 @@
 The always free __ora* CODEDOC__ is a framework for creating technical documentation for PL/SQL packages.
 It can produce output in a format similar to Oracle’s [APEX API](https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/index.html) and [Database PL/SQL Packages](https://docs.oracle.com/en/database/oracle/oracle-database/26/arpls/) references.
 
-The description text of each part of a package can be modified by comments in the package specification (syntax details can be found [here](doc/ocds.md)) or directly inside the APEX application [ocd-apex](https://github.com/yerba1704/ocd-apex).
+The description text for each part of a package can be modified using comments in the package specification (syntax details can be found [here](doc/ocds.md)) or directly in the upcoming APEX application [ocd-apex](https://github.com/yerba1704/ocd-apex).
 
 ## Example usage
 
-The `API` package provides access to all relevant information in JSON format. Simply use the `information`function:
+The `API` package provides access to all relevant information in JSON format. Simply use the `information`function from the publicly accessible `api`package:
 
 ```sql
 select ocd.api.information('YOUR_PACKAGE_NAME') from dual;
@@ -21,13 +21,17 @@ select ocd.api.information('YOUR_PACKAGE_NAME') from dual;
 
 With the JSON output you can build whatever you want. Look before getting started at the existing __ora* CODEDOC publishers__ [here](doc/ocdp.md) to see what has already been implemented by the community.
 
-When you get something like this...
+There are three ways to extract all the relevant information from the source code:
 
-```json
-{"name":"YOUR_PACKAGE_NAME","status":"NO_DATA_FOUND"}
+1. compile the source
+
+2. recompile the package in your IDE or via command.
+
+```plsql
+alter package YOUR_PACKAGE_NAME compile;
 ```
 
-...simply analyze the package explicitly using:
+3. analyze the package explicitly using:
 
 ```plsql
 begin
@@ -38,13 +42,13 @@ begin
 end;
 ```
 
-You can also recompile the package in your IDE or via command.
+If none of these steps are taken, the query will probably result in:
 
-```plsql
-alter package YOUR_PACKAGE_NAME compile;
+```json
+{"name":"YOUR_PACKAGE_NAME","status":"NO_DATA_FOUND"}
 ```
 
-<!--The full PL/SQL Package Reference for the public API package can be found [here](doc/api.adoc). -->
+The full PL/SQL Package Reference for the public API package can be found [here](doc/api.adoc).
 
 ## ora* CODEDOC syntax (OCDs)
 
@@ -65,7 +69,6 @@ The `OCD` user receives the following privileges:
 - create sequence
 - create view,
 - create procedure
-- create type
 - create trigger
 - administer database trigger
 
