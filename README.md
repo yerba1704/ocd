@@ -23,7 +23,7 @@ With the JSON output you can build whatever you want. Look before getting starte
 
 The source code can be extracted in three different ways, which are listed below:
 
-1. compile the source code via:
+1. compile the source code:
 
 ```plsql
 create or replace package YOUR_PACKAGE_NAME
