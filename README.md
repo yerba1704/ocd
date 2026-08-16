@@ -21,17 +21,23 @@ select ocd.api.information('YOUR_PACKAGE_NAME') from dual;
 
 With the JSON output you can build whatever you want. Look before getting started at the existing __ora* CODEDOC publishers__ [here](doc/ocdp.md) to see what has already been implemented by the community.
 
-There are three ways to extract all the relevant information from the source code:
+The source code can be extracted in three different ways, which are listed below:
 
-1. compile the source code via `create or replace package YOUR_PACKAGE_NAME...`
+1. compile the source code via:
 
-2. recompile the package in your IDE or via command.
+```plsql
+create or replace package YOUR_PACKAGE_NAME
+  ...
+end;
+```
+
+2. recompile the package in your IDE or via command:
 
 ```plsql
 alter package YOUR_PACKAGE_NAME compile;
 ```
 
-3. analyze the package explicitly using:
+3. analyse the package explicitly using the API package:
 
 ```plsql
 begin
