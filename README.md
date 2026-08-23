@@ -86,6 +86,10 @@ __ora* CODEDOC__ will run on any Oracle Database version 18c or above.
 
 If you have an interesting feature in mind, that you would like to see in __ora* CODEDOC__ please create a [new issue](https://github.com/yerba1704/ocd/issues).
 
+## Related Resources
+
+[PDF](https://github.com/yerba1704/ocd/blob/main/doc/doag_speaker.jpg) from DOAG 2026 presentation.
+
 ## License
 
 __ora* CODEDOC__ is released under the [MIT license](LICENSE).

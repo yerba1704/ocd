@@ -191,6 +191,14 @@ References to other schema are possible too.
 -- For more information see package [[USERNAME.DEMO_API.GET_SOMETHING]].
 ```
 
+## Highlighting
+
+Use backticks to highlight something in a comment.
+
+```plsql
+-- `PL/SQL` is Oracle's procedural extension to `SQL`.
+```
+
 ## Parsing information
 
 There are some things to know about white-space character handling and the support for the DEPRECATE Pragma in OCDs.
