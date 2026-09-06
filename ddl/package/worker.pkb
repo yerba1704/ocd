@@ -656,7 +656,14 @@ create or replace package body worker as
               end as dt,
             case when a.argument_name is not null then a.defaulted end as df, ----->>> ???
               max(length(a.argument_name)) over (partition by a.owner, a.object_name, p.overload) as al,
-              case when min(a.position) over (partition by a.object_id, a.object_name) = 0
+              max(length(
+              case when a.data_type in ('TABLE','PL/SQL TABLE')
+                  then case when type_owner!='PUBLIC' and type_owner!='SYS' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)||case when a.type_subname is not null then '.'||lower(a.type_subname) end
+                  else replace(lower(case when a.pls_type!=a.data_type then lower(pls_type) else lower(a.data_type) end),'pl/sql ')
+--                  else replace(lower(a.data_type),'pl/sql ')
+                end
+              )) over (partition by a.owner, a.object_name, p.overload) as dl,
+              case when min(a.position) over (partition by a.object_id, a.object_name, a.overload) = 0 and a.position=0
 --              case when a.position=0
                 then chr(10)||'  return '||case when a.data_type='TABLE'
                                             then case when type_owner!='PUBLIC' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)
@@ -705,11 +712,11 @@ create or replace package body worker as
               nvl(any_value(t),'procedure')||' '||any_value(n)||
                case when any_value(an) is not null then '('||chr(10) end||
                listagg(
-                case when p>0 then '    '||rpad(an,al,' ')||' '||io||' '||dt||case when dv is not null then ' default '||dv end end,
+                case when p>0 then '    '||rpad(an,al,' ')||' '||io||' '||case when dv is not null then rpad(dt,dl,' ')||' default '||dv else dt end end,
                 ','||chr(10)
                ) within group (order by p)||
                case when any_value(an) is not null then ')' end||
-               any_value(rv) as stx
+               min(rv) as stx
           from subprogram_base
       group by n, ol
       ),
