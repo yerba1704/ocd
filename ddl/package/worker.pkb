@@ -650,7 +650,8 @@ create or replace package body worker as
               case when a.argument_name is not null then
                 case when a.data_type in ('TABLE','PL/SQL TABLE')
                   then case when type_owner!='PUBLIC' and type_owner!='SYS' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)||case when a.type_subname is not null then '.'||lower(a.type_subname) end
-                  else replace(lower(a.data_type),'pl/sql ')
+                  else replace(lower(case when a.pls_type!=a.data_type then lower(pls_type) else lower(a.data_type) end),'pl/sql ')
+--                  else replace(lower(a.data_type),'pl/sql ')
                 end
               end as dt,
             case when a.argument_name is not null then a.defaulted end as df, ----->>> ???
@@ -659,7 +660,7 @@ create or replace package body worker as
 --              case when a.position=0
                 then chr(10)||'  return '||case when a.data_type='TABLE'
                                             then case when type_owner!='PUBLIC' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)
-                                            else lower(a.data_type)
+                                            else case when a.pls_type!=a.data_type then lower(pls_type) else lower(a.data_type) end
                                           end
               end||';' as rv,
               a.position as p,
