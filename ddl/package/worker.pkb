@@ -655,7 +655,8 @@ create or replace package body worker as
               end as dt,
             case when a.argument_name is not null then a.defaulted end as df, ----->>> ???
               max(length(a.argument_name)) over (partition by a.owner, a.object_name, p.overload) as al,
-              case when a.position=0
+              case when min(a.position) over (partition by a.object_id, a.object_name) = 0
+--              case when a.position=0
                 then chr(10)||'  return '||case when a.data_type='TABLE'
                                             then case when type_owner!='PUBLIC' and type_owner!=a.owner then lower(type_owner)||'.' end||lower(a.type_name)
                                             else lower(a.data_type)
