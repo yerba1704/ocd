@@ -1,41 +1,16 @@
 # ora* CODEDOC publisher (OCDp)
 
-OCD is using various ora* CODEDOC publisher to create a full documentation.
-
-## Types of publisher
-
-- [https://github.com/yerba1704/ocd-demo/](OCD-DEMO)
-  
-  - github ascii doc
-  - oracle html
-  - ...
-
-- OCD-AI?
-  
-  - ...
-
-
-
-1. APEX applications
-
-2. PL/SQL units to create single markup files (html, [md](https://en.wikipedia.org/wiki/Markdown), [rst](https://en.wikipedia.org/wiki/ReStructuredText) and [asciidoc](https://en.wikipedia.org/wiki/AsciiDoc) is supported) for use in static (web)site generators ([Sphinx](https://about.readthedocs.com/tools/sphinx/), [MkDocs](https://about.readthedocs.com/tools/mkdocs/), [Jupyter Book](https://about.readthedocs.com/tools/jupyter-book/), [Jekyll](https://jekyllrb.com/), [Hugo](https://gohugo.io/) etc.) or for further processing ([wkhtmltopdf](https://wkhtmltopdf.org/), [Pandoc](https://pandoc.org/), [Open HTML to PDF](https://github.com/danfickle/openhtmltopdf) etc.)
+OCD is using various __ora* CODEDOC publishers__ to create a full documentation.
 
 ## List of available projects
 
-comming soon...
+The [https://github.com/yerba1704/ocd-demo/](OCD-DEMO) demonstration project is a good starting point for your own project<!-- (or integration in static (web)site generators like ([Sphinx](https://about.readthedocs.com/tools/sphinx/), [MkDocs](https://about.readthedocs.com/tools/mkdocs/), [Jupyter Book](https://about.readthedocs.com/tools/jupyter-book/), [Jekyll](https://jekyllrb.com/), [Hugo](https://gohugo.io/) etc.)-->. There, you can find:
 
-<!--
-### APEX
+- the PL/SQL standalone function 'example_html', which returns HTML-formatted text
+- the PL/SQL standalone function 'example_md', which returns Markdown-formatted text
+- the PL/SQL standalone function 'example_adoc', which returns [AsciiDoc](https://en.wikipedia.org/wiki/AsciiDoc)-formatted plain text
+- the PL/SQL standalone function 'example_docx', which returns the binary data for a Microsoft Word DocX document (thanks to [Zoran Tica / zorantica](https://github.com/zorantica/plsql-word))
+- the PL/SQL standalone function 'example_pdf', which returns the binary data for a PDF document (thanks to [jtsoya539 / Javier Meza](https://github.com/jtsoya539/as_pdf))
+- the APEX region plugin OCD Viewer 24.2 (compatible with all [APEX](https://www.oracle.com/apex/) versions ≥ 24.2)
 
-- short desc and URL
-
-- ...
-
-## HTML
-
-- ...
-
-## Markdown
-
-- ...
--->
+Your project could be listed here... :smiley:
