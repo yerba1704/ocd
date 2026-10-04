@@ -4,7 +4,7 @@ Various __ora* CODEDOC publishers__ can use OCD to create full documentation.
 
 ## List of available projects
 
-The [https://github.com/yerba1704/ocd-demo/](OCD-DEMO) demonstration project is a good starting point for your own project<!-- (or integration in static (web)site generators like ([Sphinx](https://about.readthedocs.com/tools/sphinx/), [MkDocs](https://about.readthedocs.com/tools/mkdocs/), [Jupyter Book](https://about.readthedocs.com/tools/jupyter-book/), [Jekyll](https://jekyllrb.com/), [Hugo](https://gohugo.io/) etc.)-->. There, you can find:
+The [ocd-demo](https://github.com/yerba1704/ocd-demo/) demonstration project is a good starting point for your own project<!-- (or integration in static (web)site generators like ([Sphinx](https://about.readthedocs.com/tools/sphinx/), [MkDocs](https://about.readthedocs.com/tools/mkdocs/), [Jupyter Book](https://about.readthedocs.com/tools/jupyter-book/), [Jekyll](https://jekyllrb.com/), [Hugo](https://gohugo.io/) etc.)-->. There, you can find:
 
 - the PL/SQL standalone function 'example_html', which returns HTML-formatted text
 - ~~the PL/SQL standalone function 'example_md', which returns Markdown-formatted text~~
