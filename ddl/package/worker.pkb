@@ -542,7 +542,7 @@ create or replace package body worker as
       l_comment:=to_char(i_comment);
     end if;
     -- remove surrounding line breaks
-    l_comment:=trim(both chr(10) from l_comment);
+    l_comment:=trim(both chr(10) from trim(l_comment));
     -- paragraphs to unit separator
     l_comment:=regexp_replace( l_comment, chr(10)||'{2,}', chr(31) );
     -- concatenate line breaks
