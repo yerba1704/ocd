@@ -79,6 +79,7 @@ prompt >>> create main objects 1/2
 
 @ddl/trigger/ddl_on_package.trg
 @ddl/trigger/before_delete_content_revision.trg
+@ddl/function/version_info.fnc
 --------------------------------------------------------------------------------
 prompt >>> grant necessary roles
 

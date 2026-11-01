@@ -1,3 +1,89 @@
-= coming soon
+= API
 
-:)
+Interface package for using ora* CODEDOC.
+
+This chapter contains the following topics:
+
+* <<Summary of `API` Subprograms>>
+
+== Summary of `API` Subprograms
+
+This table lists the `API` subprograms and briefly describes them.
+
+|===
+|Subprogram | Description
+
+|<<INSPECT Procedure>>
+|Split source code in relevant information and save comments.
+
+|<<INFORMATION Function>>
+|Return relevant information in json format.
+|===
+
+=== INSPECT Procedure
+
+Split source code in relevant information and save comments.
+
+==== Syntax
+
+[source]
+----
+procedure inspect(
+    i_package_code in clob,
+    i_package_name in varchar2,
+    i_schema_name  in varchar2);
+----
+
+==== Parameters
+
+|===
+|Parameter | Description
+
+|I_PACKAGE_CODE
+|
+
+|I_PACKAGE_NAME
+|
+
+|I_SCHEMA_NAME
+|
+|===
+
+==== Example
+
+[source,sql]
+----
+exec ocd.api.inspect(dbms_metadata.get_ddl('PACKAGE_SPEC', 'API'), 'API');
+----
+=== INFORMATION Function
+
+Return relevant information in json format.
+
+==== Syntax
+
+[source]
+----
+function information(
+    i_package_name in varchar2,
+    i_schema_name  in varchar2)
+  return clob;
+----
+
+==== Parameters
+
+|===
+|Parameter | Description
+
+|I_PACKAGE_NAME
+|The name of the package.
+
+|I_SCHEMA_NAME
+|
+|===
+
+==== Example
+
+[source,sql]
+----
+select ocd.api.information('API') from dual;
+----

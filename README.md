@@ -1,8 +1,9 @@
-<p>
-  <img src="https://img.shields.io/badge/Status-Work%20In%20Progress-yellow?style=flat-square" alt="Work in progress...">
-</p>
-
 # ora* CODEDOC
+
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
+[![Made With Love](https://img.shields.io/badge/Made%20With-Love-orange.svg)]()
+[![Buy Me a Mate](https://img.shields.io/badge/%F0%9F%A7%89-Buy%20Me%20a%20Mate-green)](https://buymeacoffee.com/yerba1704)
 
 ## Introduction
 
