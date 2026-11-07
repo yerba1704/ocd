@@ -692,7 +692,7 @@ create or replace package body worker as
                 and arg.package_name=c.package_name
                 and arg.object_name=c.object_name
                 and arg.argument_name=c.argument_name
-                and decode(arg.overload,c.overload,1,0)=1 )
+                and decode(nvl(arg.overload,1),c.overload,1,0)=1 )
            where arg.owner=:0
              and arg.package_name=:1
                 ) a on (p.owner=a.owner
