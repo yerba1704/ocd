@@ -3,3 +3,4 @@ create or replace function version_info return varchar2 authid definer is
 begin
   return c_release;
 end version_info;
+/
